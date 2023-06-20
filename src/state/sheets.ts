@@ -33,16 +33,21 @@ export const useSheets = create(
           if (slectedId && s.sheets[slectedId]) {
             const { id } = cell;
             const cells = s.sheets[slectedId].data;
-            const computedCell = computeCell(cell, cells);
-            s.sheets[slectedId].data[id] = computedCell;
+            const { computed, inputCellRefsToRemove } = computeCell(cell, cells);
+            s.sheets[slectedId].data[id] = computed;
 
-            // Reference input cells
-            Object.keys(computedCell.inputCells).forEach(cellId => {
+            // Add cell references to input cells
+            Object.keys(computed.inputCells).forEach(cellId => {
               s.sheets[slectedId].data[cellId].outputCells[id] = true;
             });
+            // Remove cell reference from no longed dependeant cells
+            inputCellRefsToRemove.forEach(cellId => {
+              delete s.sheets[slectedId].data[cellId].outputCells[id];
+            });
             // Recalculate depending cells
-            Object.keys(computedCell.outputCells).forEach(cellId => {
-              s.sheets[slectedId].data[cellId] = computeCell(s.sheets[slectedId].data[cellId], cells);
+            Object.keys(computed.outputCells).forEach(cellId => {
+              const { computed } = computeCell(s.sheets[slectedId].data[cellId], cells);
+              s.sheets[slectedId].data[cellId] = computed;
             });
           }
         });
