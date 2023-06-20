@@ -46,10 +46,7 @@ export const useSheets = create(
         if (selectedSheetId && s.sheets[selectedSheetId]) {
           const cells = s.sheets[selectedSheetId].data;
           if (cells[row]?.[cell]) {
-            return getComputedValue(
-              cells[row][cell],
-              cells
-            );
+            return getComputedValue(cells[row][cell], cells)
           } else {
             if (!s.sheets[selectedSheetId].data[row]) s.sheets[selectedSheetId].data[row] = [];
             const newEmptyCell = new Cell(row, cell).toPlainObject();

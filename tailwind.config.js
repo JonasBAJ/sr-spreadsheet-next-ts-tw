@@ -20,6 +20,7 @@ module.exports = {
         yellow: '#FFD955',
         green: '#128808',
         layout: '#F3F3F3',
+        'error-border': '#AF3434',
         'col-header': '#EFEFEF',
         'input-edit': '#CBDCFF'
       },

@@ -23,7 +23,7 @@ const selectCells = (
 
   matches?.forEach(cellRef => {
     const [row, col] = cellToCoordinates(cellRef);
-    if (cells[row][col]) {
+    if (cells[row]?.[col]) {
       cellRefs[cellRef] = cells[row][col];
     }
   });
@@ -40,14 +40,20 @@ const getFormulaWithValues = (cell: ICell, referencedCells: Record<string, ICell
   }).replace('=', '');
 }
 
-const evaluateFormula = (formula: string): string => {
+const evaluateFormula = (formula: string): { computed: string, error?: boolean } => {
   const cleanFormula = formula.replace('=', '');
   try {
     const result = evaluate(cleanFormula);
-    return String(result);
+    return {
+      computed: String(result),
+      error: false,
+    };
   } catch (error) {
     console.error(`Invalid formula: ${formula}`);
-    return cleanFormula;
+    return {
+      computed: cleanFormula,
+      error: true,
+    };
   }
 }
 
@@ -63,7 +69,7 @@ export const getComputedValue = (
   } else if (!hasReferences(cell)) {
     return {
       ...cell,
-      computed: evaluateFormula(cell.value),
+      ...evaluateFormula(cell.value),
     }
   }
 
@@ -72,6 +78,6 @@ export const getComputedValue = (
 
   return {
     ...cell,
-    computed: evaluateFormula(finalFormula),
+    ...evaluateFormula(finalFormula),
   }
 }

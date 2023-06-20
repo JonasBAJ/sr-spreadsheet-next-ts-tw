@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useEffect, useRef, KeyboardEvent } from 'react';
 import { Pencil } from '../svg/Pencil';
 import { ISheetsState, useSheets } from '../../state/sheets';
 import { produce } from 'immer';
-import { getCellValue } from '../../utils/cellFormat';
+import { formatValue } from '../../utils/cellFormat';
 
 const selector = (row: number, cell: number) => (s: ISheetsState) => ({
   cellData: s.getComputedCell(row, cell),
@@ -77,7 +77,7 @@ export const CellItem: FC<Props> = ({
           />
         ) : (
           <p className='h-[24px]'>
-            {getCellValue(cellData)}
+            {formatValue(cellData)}
           </p>
         )}
       </div>
