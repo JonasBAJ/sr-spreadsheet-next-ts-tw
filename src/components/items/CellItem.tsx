@@ -1,43 +1,45 @@
 import { ChangeEvent, FC, useEffect, useRef, KeyboardEvent } from 'react';
 import { Pencil } from '../svg/Pencil';
-import { ISheetsState, useSheets } from '../../state/sheets';
+import { useSheets } from '../../state/sheets';
 import { produce } from 'immer';
 import { formatValue } from '../../utils/cellFormat';
-
-const selector = (row: number, cell: number) => (s: ISheetsState) => ({
-  cellData: s.getComputedCell(row, cell),
-  updateCell: s.updateCell,
-})
+import { ICell } from '../../types/sheet';
+import toast from 'react-hot-toast';
 
 interface Props {
-  row: number;
-  cell: number;
+  cell?: ICell;
   last?: boolean;
   rowOnEdit?: boolean;
 }
 
 export const CellItem: FC<Props> = ({
-  row,
   cell,
   last,
   rowOnEdit,
 }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const { cellData, updateCell } = useSheets(selector(row, cell));
+  const { updateCell } = useSheets();
   const separator = last ? '' : 'border-r border-black/30';
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
-  const editStyle = cellData?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
+  const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
 
   useEffect(() => {
-    if (cellData?.edit && ref.current) {
+    if (cell?.edit && ref.current) {
       ref.current.focus();
     }
-  }, [cellData?.edit, ref.current])
+  }, [cell?.edit, ref.current])
 
 
   const updateCellValue = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    const newCell = produce(cellData, draft => {
+
+    if (cell?.id && newValue.includes(cell?.id)) {
+      toast.error("Cell can not reference itself!");
+      return;
+    }
+
+
+    const newCell = produce(cell, draft => {
       if (draft) {
         draft.value = newValue;
       }
@@ -48,7 +50,7 @@ export const CellItem: FC<Props> = ({
   }
 
   const toggleEdit = () => {
-    const newCell = produce(cellData, draft => {
+    const newCell = produce(cell, draft => {
       if (draft) {
         draft.edit = !draft.edit;
       }
@@ -72,12 +74,12 @@ export const CellItem: FC<Props> = ({
             ref={ref}
             onKeyDown={onKeyDown}
             className='cell-input'
-            value={cellData?.value}
+            value={cell?.value}
             onChange={updateCellValue}
           />
         ) : (
           <p className='h-[24px]'>
-            {formatValue(cellData)}
+            {formatValue(cell)}
           </p>
         )}
       </div>

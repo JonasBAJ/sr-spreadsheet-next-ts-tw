@@ -1,35 +1,40 @@
 import { ICell } from '../types/sheet';
 
 export class Cell implements ICell {
-  row: number;
-  col: number;
+  id: string
   edit: boolean = false
   value: string;
   computed?: string | undefined;
+  error?: boolean;
+  outputCells: Record<string, boolean> = {};
+  inputCells: Record<string, boolean> = {};
 
   constructor(props: ICell);
-  constructor(row: number, col: number, value?: string);
+  constructor(id: string, value?: string);
 
   constructor(...args: any[]) {
     if (args.length === 1) {
       const cell = args[0] as ICell;
-      this.row = cell.row;
-      this.col = cell.col;
+      this.id = cell.id;
       this.edit = cell.edit;
       this.value = cell.value;
       this.computed = cell.computed;
+      this.error = cell.error;
+      this.outputCells = cell.outputCells;
+      this.inputCells = cell.inputCells;
     } else {
-      this.row = args[0] as number;
-      this.col = args[1] as number;
+      this.id = args[0] as string;
       this.value = (args[2] || '') as string;
     }
   }
 
   toPlainObject = () => ({
-    row: this.row,
-    col: this.col,
+    id: this.id,
     edit: this.edit,
     value: this.value,
     computed: this.computed,
+    error: this.error,
+    outputCells: this.outputCells,
+    inputCells: this.inputCells,
   })
 }

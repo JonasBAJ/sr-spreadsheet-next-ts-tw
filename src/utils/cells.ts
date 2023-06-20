@@ -7,28 +7,33 @@ const hasReferences = (cell: ICell) => {
   return matches && matches?.length > 0;
 }
 
-const cellToCoordinates = (cellRef: string): number[] => {
+export const coordinatesToNotation = (row: number, col: number): string => {
+  const colLetter = String.fromCharCode('A'.charCodeAt(0) + col);
+  const rowNumber = (row + 1).toString();
+  return colLetter + rowNumber;
+}
+
+const notationToCoordinates = (cellRef: string): number[] => {
   const col = cellRef.charCodeAt(0) - 'A'.charCodeAt(0);
   const row = parseInt(cellRef.slice(1)) - 1;
   return [row, col];
 }
 
-const selectCells = (
+const selectInputCells = (
   cell: ICell,
-  cells: ICell[][]
+  cells: Record<string, ICell>
 ): Record<string, ICell> => {
-  const cellRefs: Record<string, ICell> = {};
+  const inputCells: Record<string, ICell> = {};
   const regex = /[A-Z]+\d+/g;
   const matches = cell.value.toUpperCase().match(regex);
 
   matches?.forEach(cellRef => {
-    const [row, col] = cellToCoordinates(cellRef);
-    if (cells[row]?.[col]) {
-      cellRefs[cellRef] = cells[row][col];
+    if (cells[cellRef]) {
+      inputCells[cellRef] = cells[cellRef];
     }
   });
 
-  return cellRefs;
+  return inputCells;
 }
 
 const getFormulaWithValues = (cell: ICell, referencedCells: Record<string, ICell>) => {
@@ -57,27 +62,34 @@ const evaluateFormula = (formula: string): { computed: string, error?: boolean }
   }
 }
 
-export const getComputedValue = (
+export const computeCell = (
   cell: ICell,
-  cells: ICell[][]
-) => {
+  cells: Record<string, ICell>
+): ICell => {
   if (!cell.value.startsWith('=')) {
     return {
       ...cell,
       computed: undefined,
+      inputCells: {},
     };
   } else if (!hasReferences(cell)) {
     return {
       ...cell,
       ...evaluateFormula(cell.value),
+      inputCells: {},
     }
   }
 
-  const formulaCells = selectCells(cell, cells);
-  const finalFormula = getFormulaWithValues(cell, formulaCells);
+  const inputCells = selectInputCells(cell, cells);
+  const finalFormula = getFormulaWithValues(cell, inputCells);
+  const inputCellIds =  Object.keys(inputCells).filter(id => id !== cell.id);
 
   return {
     ...cell,
     ...evaluateFormula(finalFormula),
+    inputCells: inputCellIds.reduce((pv, cv) => ({
+      ...pv,
+      [cv]: true,
+    }), {})
   }
 }

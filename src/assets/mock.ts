@@ -18,72 +18,27 @@ export const mockSheet: ISheet = {
       value: "Annual Reward in $",
     },
   ],
-  data: [
-    [
-      {
-        col: 0,
-        row: 0,
-        edit: false,
-        value: "1000",
-      },
-      {
-        col: 1,
-        row: 0,
-        edit: false,
-        value: "15",
-      },
-      {
-        col: 2,
-        row: 0,
-        edit: false,
-        value: "=A1*B1",
-      },
-    ],
-    // [
-    //   {
-    //     col: 0,
-    //     row: 1,
-    //     edit: false,
-    //     format: "$",
-    //     value: "1000",
-    //   },
-    //   {
-    //     col: 1,
-    //     row: 1,
-    //     edit: false,
-    //     format: "%",
-    //     value: "15",
-    //   },
-    //   {
-    //     col: 2,
-    //     row: 1,
-    //     edit: false,
-    //     format: "$",
-    //     value: "=A1*B1",
-    //   },
-    // ],
-    // [
-    //   {
-    //     col: 0,
-    //     row: 2,
-    //     edit: false,
-    //     format: "$",
-    //     value: "1000",
-    //   },
-    //   {
-    //     col: 1,
-    //     row: 2,
-    //     edit: false,
-    //     format: "%",
-    //     value: "15",
-    //   },
-    //   {
-    //     col: 2,
-    //     row: 2,
-    //     edit: false,
-    //     format: "$",
-    //     value: "=A1*B1",
-    //   },
-    // ],
-  ],
+  data: {
+    A1: {
+      id: "A1",
+      edit: false,
+      value: "1000",
+      outputCells: {},
+      inputCells: {},
+    },
+    B1: {
+      id: "B1",
+      edit: false,
+      value: "15",
+      outputCells: {},
+      inputCells: {},
+    },
+    C1: {
+      id: "C1",
+      edit: false,
+      value: "=A1*B1",
+      outputCells: {},
+      inputCells: {}
+    },
+  },
 };

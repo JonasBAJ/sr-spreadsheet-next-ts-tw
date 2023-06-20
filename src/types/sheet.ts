@@ -1,12 +1,13 @@
 
 // type ValueFormat = '$' | '%' | 'none';
 export interface ICell {
-  row: number;
-  col: number;
+  id: string;
   edit: boolean;
   value: string;
   computed?: string;
   error?: boolean;
+  outputCells: Record<string, boolean>;
+  inputCells: Record<string, boolean>;
 }
 
 export interface IColHeader {
@@ -20,5 +21,5 @@ export interface ISheet {
   cols: number;
   title?: string;
   colNames: IColHeader[];
-  data: ICell[][];
+  data: Record<string, ICell>
 }
