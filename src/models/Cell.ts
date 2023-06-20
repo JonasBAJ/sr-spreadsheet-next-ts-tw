@@ -6,6 +6,7 @@ export class Cell implements ICell {
   value: string;
   computed?: string | undefined;
   error?: boolean;
+  message?: string;
   outputCells: Record<string, boolean> = {};
   inputCells: Record<string, boolean> = {};
 
@@ -20,6 +21,7 @@ export class Cell implements ICell {
       this.value = cell.value;
       this.computed = cell.computed;
       this.error = cell.error;
+      this.message = cell.message;
       this.outputCells = cell.outputCells;
       this.inputCells = cell.inputCells;
     } else {
@@ -34,6 +36,7 @@ export class Cell implements ICell {
     value: this.value,
     computed: this.computed,
     error: this.error,
+    message: this.message,
     outputCells: this.outputCells,
     inputCells: this.inputCells,
   })

@@ -6,6 +6,7 @@ export interface ICell {
   value: string;
   computed?: string;
   error?: boolean;
+  message?: string;
   outputCells: Record<string, boolean>;
   inputCells: Record<string, boolean>;
 }

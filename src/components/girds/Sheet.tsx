@@ -4,7 +4,6 @@ import { RowItem } from "../items/RowItem";
 const selector = (s: ISheetsState) => {
   const selectedId = s.selectedSheetId;
   const sheet = selectedId ? s.sheets[selectedId] : null;
-  console.log(sheet?.data);
   return {
     cols: sheet?.cols,
     rows: sheet?.rows,

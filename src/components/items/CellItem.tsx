@@ -17,8 +17,8 @@ export const CellItem: FC<Props> = ({
   last,
   rowOnEdit,
 }) => {
-  const ref = useRef<HTMLInputElement>(null);
   const { updateCell } = useSheets();
+  const ref = useRef<HTMLInputElement>(null);
   const separator = last ? '' : 'border-r border-black/30';
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
@@ -33,7 +33,7 @@ export const CellItem: FC<Props> = ({
   const updateCellValue = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
-    if (cell?.id && newValue.includes(cell?.id)) {
+    if (cell?.id && newValue.toUpperCase().includes(cell?.id)) {
       toast.error("Cell can not reference itself!");
       return;
     }
@@ -66,6 +66,12 @@ export const CellItem: FC<Props> = ({
     }
   }
 
+  const showError = () => {
+    if (cell?.error && cell.message) {
+      toast.error(`${cell.id}: ${cell.message}`);
+    }
+  }
+
   return (
     <div className={`cell ${bgStyle} ${editStyle}`}>
       <div className={`w-full h-full py-2.5 ${separator}`}>
@@ -75,6 +81,7 @@ export const CellItem: FC<Props> = ({
             onKeyDown={onKeyDown}
             className='cell-input'
             value={cell?.value}
+            onBlur={showError}
             onChange={updateCellValue}
           />
         ) : (

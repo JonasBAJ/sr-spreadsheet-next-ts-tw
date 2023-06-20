@@ -13,12 +13,6 @@ export const coordinatesToNotation = (row: number, col: number): string => {
   return colLetter + rowNumber;
 };
 
-const notationToCoordinates = (cellRef: string): number[] => {
-  const col = cellRef.charCodeAt(0) - "A".charCodeAt(0);
-  const row = parseInt(cellRef.slice(1)) - 1;
-  return [row, col];
-};
-
 const selectInputCells = (
   cell: ICell,
   cells: Record<string, ICell>
@@ -52,19 +46,22 @@ const getFormulaWithValues = (
 
 const evaluateFormula = (
   formula: string
-): { computed: string; error?: boolean } => {
+): { computed: string; error?: boolean; message?: string } => {
   const cleanFormula = formula.replace("=", "");
   try {
     const result = evaluate(cleanFormula);
+    if (isNaN(result)) throw new Error('Invalid formula');
+
     return {
       computed: String(result),
       error: false,
+      message: undefined,
     };
-  } catch (error) {
-    console.error(`Invalid formula: ${formula}`);
+  } catch {
     return {
       computed: cleanFormula,
       error: true,
+      message: `Invalid input: =${cleanFormula}`
     };
   }
 };
@@ -76,6 +73,8 @@ export const computeCell = (cell: ICell, cells: Record<string, ICell>) => {
       computed: {
         ...cell,
         computed: undefined,
+        error: false,
+        message: undefined,
         inputCells: {},
       },
     };
