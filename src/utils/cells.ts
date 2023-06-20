@@ -3,7 +3,7 @@ import { ICell } from '../types/sheet';
 
 const hasReferences = (cell: ICell) => {
   const regex = /[A-Z]+\d+/g;
-  const matches = cell.value.match(regex);
+  const matches = cell.value.toUpperCase().match(regex);
   return matches && matches?.length > 0;
 }
 
@@ -13,23 +13,13 @@ const cellToCoordinates = (cellRef: string): number[] => {
   return [row, col];
 }
 
-const evaluateFormula = (formula: string): number | null => {
-  try {
-    const result = evaluate(formula);
-    return result;
-  } catch (error) {
-    console.error(`Invalid formula: ${formula}`);
-    return null;
-  }
-}
-
 const selectCells = (
   cell: ICell,
   cells: ICell[][]
 ): Record<string, ICell> => {
   const cellRefs: Record<string, ICell> = {};
   const regex = /[A-Z]+\d+/g;
-  const matches = cell.value.match(regex);
+  const matches = cell.value.toUpperCase().match(regex);
 
   matches?.forEach(cellRef => {
     const [row, col] = cellToCoordinates(cellRef);
@@ -41,32 +31,47 @@ const selectCells = (
   return cellRefs;
 }
 
-const replaceReferencesWithValues = (cell: ICell, referencedCells: Record<string, ICell>) => {
+const getFormulaWithValues = (cell: ICell, referencedCells: Record<string, ICell>) => {
   const regex = /[A-Z]+\d+/g;
-  const formula = cell.value;
+  const formula = cell.value.toUpperCase();
   return formula.replace(regex, (match) => {
     const cell = referencedCells[match];
-    return cell ? cell.value : NaN.toString(); // replace with '0' if the cell does not exist
+    return cell ? cell?.computed || cell.value : NaN.toString(); // replace with '0' if the cell does not exist
   }).replace('=', '');
+}
+
+const evaluateFormula = (formula: string): string => {
+  const cleanFormula = formula.replace('=', '');
+  try {
+    const result = evaluate(cleanFormula);
+    return String(result);
+  } catch (error) {
+    console.error(`Invalid formula: ${formula}`);
+    return cleanFormula;
+  }
 }
 
 export const getComputedValue = (
   cell: ICell,
   cells: ICell[][]
 ) => {
-  if (cell.value.startsWith('=') && hasReferences(cell)) {
-    const formulaCells = selectCells(cell, cells);
-    const finalFormula = replaceReferencesWithValues(cell, formulaCells);
-
+  if (!cell.value.startsWith('=')) {
     return {
       ...cell,
-      computed: evaluateFormula(finalFormula)?.toString(),
-    }
-  } else if (cell.value.startsWith('=')) {
+      computed: undefined,
+    };
+  } else if (!hasReferences(cell)) {
     return {
       ...cell,
-      computed: evaluateFormula(cell.value)?.toString(),
+      computed: evaluateFormula(cell.value),
     }
   }
-  return cell;
+
+  const formulaCells = selectCells(cell, cells);
+  const finalFormula = getFormulaWithValues(cell, formulaCells);
+
+  return {
+    ...cell,
+    computed: evaluateFormula(finalFormula),
+  }
 }
