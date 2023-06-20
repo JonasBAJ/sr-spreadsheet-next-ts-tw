@@ -52,7 +52,6 @@ export const CellItem: FC<Props> = ({
       if (draft) {
         draft.edit = !draft.edit;
       }
-
     })
     if (newCell) {
       updateCell(newCell);

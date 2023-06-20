@@ -4,6 +4,7 @@ import { immer } from "zustand/middleware/immer";
 import { ICell, ISheet } from "../types/sheet";
 import { mockSheet } from "../assets/mock";
 import { getComputedValue } from "../utils/cells";
+import { Cell } from '../models/Cell';
 
 export interface ISheetsState {
   selectedSheetId: string | null;
@@ -49,8 +50,12 @@ export const useSheets = create(
               cells[row][cell],
               cells
             );
+          } else {
+            if (!s.sheets[selectedSheetId].data[row]) s.sheets[selectedSheetId].data[row] = [];
+            const newEmptyCell = new Cell(row, cell).toPlainObject();
+            s.sheets[selectedSheetId].data[row][cell] = newEmptyCell;
+            return newEmptyCell;
           }
-          return null;
         }
         return null;
       }
