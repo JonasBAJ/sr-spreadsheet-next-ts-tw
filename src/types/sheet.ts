@@ -1,18 +1,16 @@
 
-type ValueFormat = '$' | '%' | 'none';
+// type ValueFormat = '$' | '%' | 'none';
 export interface ICell {
   row: number;
   col: number;
   edit: boolean;
   value: string;
-  format: ValueFormat;
   computed?: string;
 }
 
 export interface IColHeader {
   col: number;
   value: string;
-  format: ValueFormat;
 }
 
 export interface ISheet {

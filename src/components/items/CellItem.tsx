@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useEffect, useRef, KeyboardEvent } from 'react';
 import { Pencil } from '../svg/Pencil';
 import { ISheetsState, useSheets } from '../../state/sheets';
 import { produce } from 'immer';
-import { formatCellValue } from '../../utils/cellFormat';
+import { getCellValue } from '../../utils/cellFormat';
 
 const selector = (row: number, cell: number) => (s: ISheetsState) => ({
   cellData: s.getComputedCell(row, cell),
@@ -70,13 +70,15 @@ export const CellItem: FC<Props> = ({
         {rowOnEdit ? (
           <input
             ref={ref}
-            value={cellData?.value}
             onKeyDown={onKeyDown}
             className='cell-input'
+            value={cellData?.value}
             onChange={updateCellValue}
           />
         ) : (
-          <p>{formatCellValue(cellData) || "N/A"}</p>
+          <p className='h-[24px]'>
+            {getCellValue(cellData)}
+          </p>
         )}
       </div>
       <button onClick={toggleEdit} className='absolute bottom-1 right-0 py-1 px-2'>

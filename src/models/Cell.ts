@@ -5,7 +5,6 @@ export class Cell implements ICell {
   col: number;
   edit: boolean = false
   value: string;
-  format: '$' | '%' | 'none';
   computed?: string | undefined;
 
   constructor(props: ICell);
@@ -18,13 +17,11 @@ export class Cell implements ICell {
       this.col = cell.col;
       this.edit = cell.edit;
       this.value = cell.value;
-      this.format = cell.format;
       this.computed = cell.computed;
     } else {
       this.row = args[0] as number;
       this.col = args[1] as number;
       this.value = (args[2] || '') as string;
-      this.format = 'none';
     }
   }
 
@@ -33,7 +30,6 @@ export class Cell implements ICell {
     col: this.col,
     edit: this.edit,
     value: this.value,
-    format: this.format,
     computed: this.computed,
   })
 }

@@ -1,7 +1,7 @@
 import { evaluate } from 'mathjs';
 import { ICell } from '../types/sheet';
 
-export const hasReferences = (cell: ICell) => {
+const hasReferences = (cell: ICell) => {
   const regex = /[A-Z]+\d+/g;
   const matches = cell.value.match(regex);
   return matches && matches?.length > 0;
@@ -13,7 +13,7 @@ const cellToCoordinates = (cellRef: string): number[] => {
   return [row, col];
 }
 
-export const evaluateFormula = (formula: string): number | null => {
+const evaluateFormula = (formula: string): number | null => {
   try {
     const result = evaluate(formula);
     return result;
@@ -23,7 +23,7 @@ export const evaluateFormula = (formula: string): number | null => {
   }
 }
 
-export const selectCells = (
+const selectCells = (
   cell: ICell,
   cells: ICell[][]
 ): Record<string, ICell> => {
@@ -41,7 +41,7 @@ export const selectCells = (
   return cellRefs;
 }
 
-export const replaceReferencesWithValues = (cell: ICell, referencedCells: Record<string, ICell>) => {
+const replaceReferencesWithValues = (cell: ICell, referencedCells: Record<string, ICell>) => {
   const regex = /[A-Z]+\d+/g;
   const formula = cell.value;
   return formula.replace(regex, (match) => {

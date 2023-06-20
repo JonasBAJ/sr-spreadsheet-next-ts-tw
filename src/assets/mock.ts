@@ -7,17 +7,14 @@ export const mockSheet: ISheet = {
   colNames: [
     {
       col: 0,
-      format: "$",
       value: "Price",
     },
     {
       col: 1,
-      format: "%",
       value: "Reward Rate",
     },
     {
       col: 2,
-      format: "$",
       value: "Annual Reward in $",
     },
   ],
@@ -27,21 +24,18 @@ export const mockSheet: ISheet = {
         col: 0,
         row: 0,
         edit: false,
-        format: "$",
         value: "1000",
       },
       {
         col: 1,
         row: 0,
         edit: false,
-        format: "%",
         value: "15",
       },
       {
         col: 2,
         row: 0,
         edit: false,
-        format: "$",
         value: "=A1*B1",
       },
     ],
