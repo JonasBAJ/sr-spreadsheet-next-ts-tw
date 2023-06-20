@@ -3,14 +3,14 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { ICell, ISheet } from "../types/sheet";
 import { mockSheet } from "../assets/mock";
-import { selectCells } from "../utils/cells";
+import { getComputedValue } from "../utils/cells";
 
 export interface ISheetsState {
   selectedSheetId: string | null;
   sheets: Record<string, ISheet>;
   updateTitle: (col: number, value: string) => void;
   updateCell: (cell: ICell) => void;
-  getReferencedCells: (cell: ICell) => Record<string, ICell>;
+  getComputedCell: (cell: ICell) => ICell;
 }
 
 export const useSheets = create(
@@ -39,14 +39,14 @@ export const useSheets = create(
           }
         });
       },
-      getReferencedCells: (cell: ICell) => {
+      getComputedCell: (cell: ICell) => {
         const s = get();
-        const slectedId = s.selectedSheetId;
-        if (slectedId && s.sheets[slectedId]) {
-          return selectCells(cell, s.sheets[slectedId].data);
+        const selectedSheetId = s.selectedSheetId;
+        if (selectedSheetId && s.sheets[selectedSheetId]) {
+          return getComputedValue(cell, s.sheets[selectedSheetId].data);
         }
-        return {};
-      },
+        return cell;
+      }
     })),
     {
       name: "stacking-storage",

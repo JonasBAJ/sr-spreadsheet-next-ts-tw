@@ -17,7 +17,7 @@ export const CellItem: FC<Props> = ({
   rowOnEdit,
 }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const { updateCell, getReferencedCells } = useSheets();
+  const { updateCell, getComputedCell } = useSheets();
   const separator = last ? '' : 'border-r border-black/30';
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
@@ -59,7 +59,8 @@ export const CellItem: FC<Props> = ({
     }
   }
 
-  console.log(cell && getReferencedCells(cell));
+  const computedCell = cell && getComputedCell(cell);
+  console.log(computedCell);
 
   return (
     <div className={`cell ${bgStyle} ${editStyle}`}>
@@ -73,7 +74,7 @@ export const CellItem: FC<Props> = ({
             onChange={updateCellValue}
           />
         ) : (
-          <p>{formatCellValue(cell) || "N/A"}</p>
+          <p>{formatCellValue(computedCell) || "N/A"}</p>
         )}
       </div>
       <button onClick={toggleEdit} className='absolute bottom-1 right-0 py-1 px-2'>

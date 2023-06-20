@@ -6,6 +6,7 @@ export interface ICell {
   edit: boolean;
   value: string;
   format: ValueFormat;
+  computed?: string;
 }
 
 export interface IColHeader {
