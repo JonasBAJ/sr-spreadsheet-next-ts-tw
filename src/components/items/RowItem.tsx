@@ -1,27 +1,37 @@
 import { FC } from "react";
-import { ICell } from "../../types/sheet";
 import { CellItem } from './CellItem';
+import { ISheetsState, useSheets } from '../../state/sheets';
 
 interface Props {
-  cols: number;
-  cells: ICell[];
+  row: number;
 }
 
-export const RowItem: FC<Props> = ({ cols, cells }) => {
-  const gridTemplateColumns = "1fr ".repeat(cols || 0);
-  const rowOnEdit = cells.some(c => c.edit);
+const selector = (row: number) => (s: ISheetsState) => {
+  const selectedId = s.selectedSheetId;
+  const sheet = selectedId ? s.sheets[selectedId] : null;
+  return {
+    cellCount: sheet?.cols,
+    rowOnEdit: sheet?.data[row]?.some(c => c.edit),
+  };
+};
+
+export const RowItem: FC<Props> = ({ row }) => {
+  const { cellCount, rowOnEdit } = useSheets(selector(row));
+  const gridTemplateColumns = "1fr ".repeat(cellCount || 0);
+  const cells = Array(cellCount).fill(0);
 
   return (
     <div
       style={{ gridTemplateColumns }}
       className="w-full grid justify-items-center items-center pr-12"
     >
-      {Array(cols).fill(0).map((_, i) => (
+      {cells.map((_, i) => (
         <CellItem
           key={i}
-          cell={cells[i]}
-          last={i === cols-1}
+          cell={i}
+          row={row}
           rowOnEdit={rowOnEdit}
+          last={i === cells.length - 1}
         />
       ))}
     </div>

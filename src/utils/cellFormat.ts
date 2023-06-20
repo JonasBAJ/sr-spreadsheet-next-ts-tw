@@ -7,7 +7,7 @@ const getCellValue = (cell: ICell) => {
   return cell.value;
 }
 
-export const formatCellValue = (cell?: ICell) => {
+export const formatCellValue = (cell?: ICell | null) => {
   if (!cell) return '';
 
   const value = getCellValue(cell);

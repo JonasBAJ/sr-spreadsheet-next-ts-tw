@@ -10,7 +10,7 @@ export interface ISheetsState {
   sheets: Record<string, ISheet>;
   updateTitle: (col: number, value: string) => void;
   updateCell: (cell: ICell) => void;
-  getComputedCell: (cell: ICell) => ICell;
+  getComputedCell: (row: number, cell: number) => ICell | null;
 }
 
 export const useSheets = create(
@@ -39,13 +39,20 @@ export const useSheets = create(
           }
         });
       },
-      getComputedCell: (cell: ICell) => {
+      getComputedCell: (row: number, cell: number) => {
         const s = get();
         const selectedSheetId = s.selectedSheetId;
         if (selectedSheetId && s.sheets[selectedSheetId]) {
-          return getComputedValue(cell, s.sheets[selectedSheetId].data);
+          const cells = s.sheets[selectedSheetId].data;
+          if (cells[row]?.[cell]) {
+            return getComputedValue(
+              cells[row][cell],
+              cells
+            );
+          }
+          return null;
         }
-        return cell;
+        return null;
       }
     })),
     {

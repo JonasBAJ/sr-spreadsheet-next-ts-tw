@@ -1,37 +1,43 @@
 import { ChangeEvent, FC, useEffect, useRef, KeyboardEvent } from 'react';
-import { ICell } from '../../types/sheet';
 import { Pencil } from '../svg/Pencil';
-import { useSheets } from '../../state/sheets';
+import { ISheetsState, useSheets } from '../../state/sheets';
 import { produce } from 'immer';
 import { formatCellValue } from '../../utils/cellFormat';
 
+const selector = (row: number, cell: number) => (s: ISheetsState) => ({
+  cellData: s.getComputedCell(row, cell),
+  updateCell: s.updateCell,
+})
+
 interface Props {
-  cell?: ICell;
+  row: number;
+  cell: number;
   last?: boolean;
   rowOnEdit?: boolean;
 }
 
 export const CellItem: FC<Props> = ({
+  row,
   cell,
   last,
   rowOnEdit,
 }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const { updateCell, getComputedCell } = useSheets();
+  const { cellData, updateCell } = useSheets(selector(row, cell));
   const separator = last ? '' : 'border-r border-black/30';
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
-  const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
+  const editStyle = cellData?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
 
   useEffect(() => {
-    if (cell?.edit && ref.current) {
+    if (cellData?.edit && ref.current) {
       ref.current.focus();
     }
-  }, [cell?.edit, ref.current])
+  }, [cellData?.edit, ref.current])
 
 
   const updateCellValue = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    const newCell = produce(cell, draft => {
+    const newCell = produce(cellData, draft => {
       if (draft) {
         draft.value = newValue;
       }
@@ -42,7 +48,7 @@ export const CellItem: FC<Props> = ({
   }
 
   const toggleEdit = () => {
-    const newCell = produce(cell, draft => {
+    const newCell = produce(cellData, draft => {
       if (draft) {
         draft.edit = !draft.edit;
       }
@@ -59,22 +65,19 @@ export const CellItem: FC<Props> = ({
     }
   }
 
-  const computedCell = cell && getComputedCell(cell);
-  console.log(computedCell);
-
   return (
     <div className={`cell ${bgStyle} ${editStyle}`}>
       <div className={`w-full h-full py-2.5 ${separator}`}>
         {rowOnEdit ? (
           <input
             ref={ref}
-            value={cell?.value}
+            value={cellData?.value}
             onKeyDown={onKeyDown}
             className='cell-input'
             onChange={updateCellValue}
           />
         ) : (
-          <p>{formatCellValue(computedCell) || "N/A"}</p>
+          <p>{formatCellValue(cellData) || "N/A"}</p>
         )}
       </div>
       <button onClick={toggleEdit} className='absolute bottom-1 right-0 py-1 px-2'>
