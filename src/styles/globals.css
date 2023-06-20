@@ -6,3 +6,28 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #ffffff;
 }
+
+
+@layer components {
+  .header-btn {
+    @apply flex justify-center items-center;
+    @apply rounded-full h-[14px] w-[14px];
+  }
+
+  .col-header {
+    @apply font-montserrat font-medium;
+    @apply w-full text-center bg-col-header py-2.5;
+    @apply first:rounded-l-lg last:rounded-r-lg;
+  }
+
+  .cell {
+    @apply font-montserrat relative;
+    @apply w-full text-center bg-col-header py-1;
+    @apply first:rounded-l-lg last:rounded-r-lg;
+  }
+
+  .cell-input {
+    @apply font-montserrat bg-transparent;
+    @apply text-center focus:ring-0 focus:border-0 focus:outline-0	;
+  }
+}

@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors');
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,6 +11,17 @@ module.exports = {
     extend: {
       fontFamily: {
         montserrat: ['var(--font-montserrat)'],
+      },
+      colors: {
+        black: colors.black,
+        white: colors.white,
+        header: '#00498C',
+        'old-red': '#F21212',
+        yellow: '#FFD955',
+        green: '#128808',
+        layout: '#F3F3F3',
+        'col-header': '#EFEFEF',
+        'input-edit': '#CBDCFF'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
