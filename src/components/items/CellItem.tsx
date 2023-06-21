@@ -1,13 +1,24 @@
-import { ChangeEvent, FC, useEffect, useRef, KeyboardEvent } from 'react';
+import { FC, useEffect, useRef, KeyboardEvent, useState } from 'react';
 import { Pencil } from '../svg/Pencil';
-import { useSheets } from '../../state/sheets';
+import { ISheetsState, useSheets } from '../../state/sheets';
 import { produce } from 'immer';
 import { formatValue } from '../../utils/cellFormat';
 import { ICell } from '../../types/sheet';
 import toast from 'react-hot-toast';
+import { computeCell } from '../../utils/cells';
+
+const selector = (s: ISheetsState) => {
+  const selectedId = s.selectedSheetId;
+  const sheet = selectedId ? s.sheets[selectedId] : null;
+
+  return {
+    updateCell: s.updateCell,
+    cells: sheet?.data,
+  }
+}
 
 interface Props {
-  cell?: ICell;
+  cell: ICell;
   last?: boolean;
   rowOnEdit?: boolean;
 }
@@ -17,60 +28,48 @@ export const CellItem: FC<Props> = ({
   last,
   rowOnEdit,
 }) => {
-  const { updateCell } = useSheets();
+  const { updateCell, cells } = useSheets(selector);
   const ref = useRef<HTMLInputElement>(null);
-  const separator = last ? '' : 'border-r border-black/30';
-  const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
-  const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
+  const [cellValue, setCellValue] = useState(cell?.value || '')
 
   useEffect(() => {
-    if (cell?.edit && ref.current) {
+    if (cell.edit && ref.current) {
       ref.current.focus();
     }
-  }, [cell?.edit, ref.current])
-
-
-  const updateCellValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-
-    if (cell?.id && newValue.toUpperCase().includes(cell?.id)) {
-      toast.error("Cell can not reference itself!");
-      return;
-    }
-
-
-    const newCell = produce(cell, draft => {
-      if (draft) {
-        draft.value = newValue;
-      }
-    });
-    if (newCell) {
-      updateCell(newCell);
-    }
-  }
+  }, [cell.edit, ref.current])
 
   const toggleEdit = () => {
     const newCell = produce(cell, draft => {
-      if (draft) {
+      draft.edit = !draft.edit;
+    });
+    updateCell(newCell);
+  }
+
+  const onSubmit = () => {
+    try {
+      const newCell = produce(cell, draft => {
+        draft.value = cellValue;
         draft.edit = !draft.edit;
+      });
+      const { computed } = computeCell(newCell, cells || {});
+      if (computed?.error && computed.message) {
+        toast.error(`${computed.id}: ${computed.message}`);
       }
-    })
-    if (newCell) {
       updateCell(newCell);
+    } catch (e: any) {
+      toast.error(e.message);
     }
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      toggleEdit();
+      onSubmit();
     }
   }
 
-  const showError = () => {
-    if (cell?.error && cell.message) {
-      toast.error(`${cell.id}: ${cell.message}`);
-    }
-  }
+  const separator = last ? '' : 'border-r border-black/30';
+  const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
+  const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
 
   return (
     <div className={`cell ${bgStyle} ${editStyle}`}>
@@ -80,9 +79,9 @@ export const CellItem: FC<Props> = ({
             ref={ref}
             onKeyDown={onKeyDown}
             className='cell-input'
-            value={cell?.value}
-            onBlur={showError}
-            onChange={updateCellValue}
+            value={cellValue}
+            onBlur={onSubmit}
+            onChange={e => setCellValue(e.target.value)}
           />
         ) : (
           <p className='h-[24px]'>

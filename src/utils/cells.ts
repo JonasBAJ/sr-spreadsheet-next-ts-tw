@@ -50,7 +50,7 @@ const evaluateFormula = (
   const cleanFormula = formula.replace("=", "");
   try {
     const result = evaluate(cleanFormula);
-    if (isNaN(result)) throw new Error('Invalid formula');
+    if (isNaN(result)) throw new Error("Invalid formula");
 
     return {
       computed: String(result),
@@ -61,20 +61,31 @@ const evaluateFormula = (
     return {
       computed: cleanFormula,
       error: true,
-      message: `Invalid input: =${cleanFormula}`
+      message: `Invalid input: =${cleanFormula}`,
     };
   }
 };
 
 export const computeCell = (cell: ICell, cells: Record<string, ICell>) => {
-  if (!cell.value.startsWith("=")) {
+  if (cell.value.includes(cell?.id)) {
+    return {
+      inputCellRefsToRemove: [],
+      computed: {
+        ...cell,
+        error: true,
+        message: 'Cell can not reference itself!',
+        computed: undefined,
+        inputCells: {},
+      },
+    };
+  } else if (!cell.value.startsWith("=")) {
     return {
       inputCellRefsToRemove: Object.keys(cell.inputCells),
       computed: {
         ...cell,
-        computed: undefined,
         error: false,
         message: undefined,
+        computed: undefined,
         inputCells: {},
       },
     };
@@ -100,7 +111,9 @@ export const computeCell = (cell: ICell, cells: Record<string, ICell>) => {
     {} as Record<string, boolean>
   );
 
-  const inputCellRefsToRemove = Object.keys(cell.inputCells).filter(k => !newInputRefObj[k])
+  const inputCellRefsToRemove = Object.keys(cell.inputCells).filter(
+    (k) => !newInputRefObj[k]
+  );
 
   return {
     inputCellRefsToRemove,
