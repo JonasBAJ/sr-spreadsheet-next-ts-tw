@@ -56,7 +56,7 @@ export const useSheets = create(
         set((s) => {
           const slectedId = s.selectedSheetId;
           if (slectedId && s.sheets[slectedId]) {
-            s.sheets[slectedId].data[cell.id].edit = cell.edit;
+            s.sheets[slectedId].data[cell.id] = cell;
           }
         });
       },

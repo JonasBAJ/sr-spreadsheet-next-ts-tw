@@ -20,7 +20,7 @@ const Sheet = () => {
 
   return (
     <section className="w-full h-full mt-[14px]">
-      <div className='overflow-scroll'>
+      <div className='overflow-x-scroll'>
         <header className="flex gap-1 mb-4">
           <div
             style={{ gridTemplateColumns }}
@@ -34,7 +34,7 @@ const Sheet = () => {
           </div>
           {/* <button className="sheet-btn">+</button> */}
         </header>
-        <section className="flex flex-col gap-1 mb-4">
+        <section className="flex flex-col gap-1 max-h-[70vh]">
           {rowsCount.map((_, i) => (
             <RowItem key={i} row={i} />
           ))}
@@ -42,7 +42,7 @@ const Sheet = () => {
       </div>
       <button
         onClick={addNewRow}
-        className="sheet-btn w-full"
+        className="sheet-btn w-full mt-4"
       >
         + Add Row
       </button>
