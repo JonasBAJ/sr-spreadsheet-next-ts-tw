@@ -1,5 +1,5 @@
 
-// type ValueFormat = '$' | '%' | 'none';
+export type SyncStatus = 'IN_PROGRESS' | 'DONE' | 'ERROR';
 export interface ICell {
   id: string;
   edit: boolean;
@@ -18,7 +18,7 @@ export interface IColHeader {
 
 export interface ISheet {
   id: string;
-  status?: 'IN_PROGRESS' | 'DONE';
+  status?: SyncStatus;
   serverId?: string;
   rows: number;
   cols: number;

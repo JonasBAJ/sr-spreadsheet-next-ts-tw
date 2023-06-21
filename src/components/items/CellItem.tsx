@@ -70,8 +70,8 @@ export const CellItem: FC<Props> = ({
     }
   }
 
-  const separator = last ? '' : 'border-r border-black/30';
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
+  const separator = last ? '' : 'border-r border-black/30';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
 
   return (
