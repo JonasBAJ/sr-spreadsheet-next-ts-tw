@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { MacHeader } from "../components/headers/MacHeader";
 import { SearchInput } from "../components/inputs/SearchInput";
 import { useContinuousSync } from "../utils/hooks/useContinuousSync";

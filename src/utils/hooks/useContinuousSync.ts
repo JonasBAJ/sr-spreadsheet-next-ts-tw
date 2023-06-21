@@ -14,6 +14,7 @@ const selector = (s: ISheetsState) => {
 }
 
 export const useContinuousSync = () => {
+  const initialRun = useRef(true);
   const { sheet, updateSheet } = useSheets(selector);
   const updatedAtRef = useRef(sheet?.updatedAt);
 
@@ -28,6 +29,7 @@ export const useContinuousSync = () => {
     } catch (e) {
       console.log(e);
       updateSheet({ status: 'ERROR' });
+      toast.error('Error while checking status... Retying now!');
     }
   }, [sheet]);
 
@@ -45,27 +47,39 @@ export const useContinuousSync = () => {
     } catch (e: any) {
       console.log(e);
       updateSheet({ status: 'ERROR' });
+      toast.error('Error while saving data... Retying now!')
     }
   }, [sheet])
 
+  // Check or save data on initial load
+  useEffect(() => {
+    if (sheet && initialRun.current) {
+      if (!sheet?.serverId) {
+        saveSheet();
+      } else if (sheet.status !== 'DONE') {
+        checkStatus();
+      }
+      initialRun.current = false;
+    }
+  }, [sheet, initialRun, checkStatus, saveSheet])
+
+  // Handle Error and InProgress cases
+  useEffect(() => {
+    if (!initialRun.current) {
+      if (sheet?.status === 'ERROR') {
+        saveSheet();
+      } else if (sheet?.status === 'IN_PROGRESS') {
+        const timeout = setTimeout(checkStatus, 15000);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [sheet, initialRun])
+
+  // Save data after cell updates
   useEffect(() => {
     if (updatedAtRef.current !== sheet?.updatedAt) {
       saveSheet();
-      console.log('saveSheet')
       updatedAtRef.current = sheet?.updatedAt;
     }
-  }, [sheet?.updatedAt]);
-
-  useEffect(() => {
-    if (sheet?.status === 'ERROR') {
-      console.log('reSaveSheet')
-      // saveSheet();
-    } else if (sheet?.status === 'IN_PROGRESS' && sheet?.savedAt) {
-      const now = new Date();
-      const savedAt = new Date(sheet?.savedAt);
-      if (now > savedAt) {
-        checkStatus()
-      }
-    }
-  }, [sheet?.status])
+  }, [updatedAtRef, sheet])
 }
