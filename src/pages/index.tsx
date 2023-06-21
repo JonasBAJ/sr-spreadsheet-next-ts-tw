@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import { MacHeader } from '../components/headers/MacHeader'
 import { SearchInput } from '../components/inputs/SearchInput'
+import { useContinuousSync } from '../utils/hooks/useContinuousSync'
 
 const Sheet = dynamic(() => import('../components/girds/Sheet'), {
   loading: () => <p>Loading...</p>,
@@ -8,6 +9,8 @@ const Sheet = dynamic(() => import('../components/girds/Sheet'), {
 })
 
 const Home = () => {
+  useContinuousSync();
+
   return (
     <div className='h-screen w-screen bg-white'>
       <MacHeader/>

@@ -18,9 +18,13 @@ export interface IColHeader {
 
 export interface ISheet {
   id: string;
+  status?: 'IN_PROGRESS' | 'DONE';
+  serverId?: string;
   rows: number;
   cols: number;
   title?: string;
   colNames: IColHeader[];
-  data: Record<string, ICell>
+  data: Record<string, ICell>;
+  updatedAt?: string;
+  savedAt?: string;
 }

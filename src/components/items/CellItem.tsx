@@ -13,6 +13,7 @@ const selector = (s: ISheetsState) => {
 
   return {
     updateCell: s.updateCell,
+    setCellEdit: s.setCellEdit,
     cells: sheet?.data,
   }
 }
@@ -28,7 +29,7 @@ export const CellItem: FC<Props> = ({
   last,
   rowOnEdit,
 }) => {
-  const { updateCell, cells } = useSheets(selector);
+  const { updateCell, cells, setCellEdit } = useSheets(selector);
   const ref = useRef<HTMLInputElement>(null);
   const [cellValue, setCellValue] = useState(cell?.value || '')
 
@@ -42,24 +43,26 @@ export const CellItem: FC<Props> = ({
     const newCell = produce(cell, draft => {
       draft.edit = !draft.edit;
     });
-    updateCell(newCell);
+    setCellEdit(newCell);
   }
 
   const onSubmit = () => {
     try {
-      const newCell = produce(cell, draft => {
-        draft.value = cellValue;
-        draft.edit = !draft.edit;
-      });
-      const { computed } = computeCell(newCell, cells || {});
-      if (computed?.error && computed.message) {
-        toast.error(`${computed.id}: ${computed.message}`);
+      if (cellValue !== cell.value) {
+        const newCell = produce(cell, draft => {
+          draft.value = cellValue;
+          draft.edit = false;
+        });
+        const { computed } = computeCell(newCell, cells || {});
+        if (computed?.error && computed.message) {
+          toast.error(`${computed.id}: ${computed.message}`);
+        }
+        updateCell(newCell);
       }
-      updateCell(newCell);
     } catch (e: any) {
       toast.error(e.message);
     }
-  }
+  };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

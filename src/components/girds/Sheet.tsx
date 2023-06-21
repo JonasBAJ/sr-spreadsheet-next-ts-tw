@@ -8,7 +8,6 @@ const selector = (s: ISheetsState) => {
     cols: sheet?.cols,
     rows: sheet?.rows,
     colNames: sheet?.colNames,
-    updateTitle: s.updateTitle,
     addNewRow: s.addNewRow,
   };
 };
