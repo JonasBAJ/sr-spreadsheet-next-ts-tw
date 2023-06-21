@@ -49,7 +49,7 @@ export const RowItem: FC<Props> = ({ row }) => {
           );
         })}
       </div>
-      <button onClick={() => removeRow(row)} className="sheet-btn">-</button>
+      {/* <button onClick={() => removeRow(row)} className="sheet-btn">-</button> */}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { ISheetsState, useSheets } from '../../state/sheets'
 import { Api } from '../../apis/api';
 import { sheetToCsv } from '../csv';
-
+import { toast } from 'react-hot-toast';
 
 const selector = (s: ISheetsState) => {
   const selectedId = s.selectedSheetId;
@@ -26,8 +26,9 @@ export const useContinuousSync = () => {
         savedAt: res.done_at,
         status: res.status,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
+      toast.error('Error occured while saving your data');
     }
   }
 
@@ -41,6 +42,7 @@ export const useContinuousSync = () => {
       }
     } catch (e) {
       console.log(e);
+      toast.error('Error occured while retrieving status');
     }
   }
 

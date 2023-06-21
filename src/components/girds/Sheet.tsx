@@ -32,9 +32,9 @@ const Sheet = () => {
               </h2>
             ))}
           </div>
-          <button className="sheet-btn">+</button>
+          {/* <button className="sheet-btn">+</button> */}
         </header>
-        <section className="flex flex-col gap-1">
+        <section className="flex flex-col gap-1 mb-4">
           {rowsCount.map((_, i) => (
             <RowItem key={i} row={i} />
           ))}
@@ -42,7 +42,7 @@ const Sheet = () => {
       </div>
       <button
         onClick={addNewRow}
-        className="sheet-btn w-full mt-1"
+        className="sheet-btn w-full"
       >
         + Add Row
       </button>
