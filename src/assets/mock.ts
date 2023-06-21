@@ -40,5 +40,26 @@ export const mockSheet: ISheet = {
       outputCells: {},
       inputCells: {}
     },
+    A2: {
+      id: "A2",
+      edit: false,
+      value: "1000",
+      outputCells: {},
+      inputCells: {},
+    },
+    B2: {
+      id: "B2",
+      edit: false,
+      value: "15",
+      outputCells: {},
+      inputCells: {},
+    },
+    C2: {
+      id: "C2",
+      edit: false,
+      value: "=A1*B1",
+      outputCells: {},
+      inputCells: {}
+    },
   },
 };

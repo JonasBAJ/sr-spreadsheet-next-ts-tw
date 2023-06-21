@@ -4,10 +4,13 @@ import { immer } from "zustand/middleware/immer";
 import { ICell, ISheet } from "../types/sheet";
 import { mockSheet } from "../assets/mock";
 import { computeCell } from "../utils/cells";
+import { getRowCells } from '../utils/sheet';
 
 export interface ISheetsState {
   selectedSheetId: string | null;
   sheets: Record<string, ISheet>;
+  addNewRow: () => void;
+  removeRow: (row: number) => void;
   updateTitle: (col: number, value: string) => void;
   updateCell: (cell: ICell) => void;
 }
@@ -24,6 +27,23 @@ export const useSheets = create(
           const slectedId = s.selectedSheetId;
           if (slectedId && s.sheets[slectedId]) {
             s.sheets[slectedId].colNames[col].value = value;
+          }
+        });
+      },
+      addNewRow: () => {
+        set((s) => {
+          const slectedId = s.selectedSheetId;
+          if (slectedId && s.sheets[slectedId]) {
+            s.sheets[slectedId].rows += 1;
+          }
+        })
+      },
+      removeRow: (row: number) => {
+        set((s) => {
+          const slectedId = s.selectedSheetId;
+          if (slectedId && s.sheets[slectedId]) {
+            const cellsToRemove = getRowCells(row, s.sheets[slectedId].cols);
+            alert(`TODO: ${cellsToRemove} :))))`)
           }
         });
       },

@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div className='h-screen w-screen bg-white'>
       <MacHeader/>
-      <main className='max-w-[615px] w-full mx-auto pt-[34px]'>
+      <main className='container mx-auto max-w-6xl p-4'>
         <h1 className='text-black font-montserrat font-bold text-xl mb-[4px]'>
           Your Personal Staking Calculator
         </h1>
