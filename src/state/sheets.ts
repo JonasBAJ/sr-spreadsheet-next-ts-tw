@@ -43,7 +43,7 @@ export const useSheets = create(
           const slectedId = s.selectedSheetId;
           if (slectedId && s.sheets[slectedId]) {
             const cellsToRemove = getRowCells(row, s.sheets[slectedId].cols);
-            alert(`TODO: ${cellsToRemove} :))))`)
+            alert(`TODO: Delete ${cellsToRemove} :))))`)
           }
         });
       },

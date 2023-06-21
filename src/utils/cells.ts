@@ -13,6 +13,12 @@ export const coordinatesToNotation = (row: number, col: number): string => {
   return colLetter + rowNumber;
 };
 
+export const notationToCoordinates = (notation: string): number[] => {
+  const col = notation.charCodeAt(0) - 'A'.charCodeAt(0);
+  const row = parseInt(notation.slice(1)) - 1;
+  return [row, col];
+}
+
 const selectInputCells = (
   cell: ICell,
   cells: Record<string, ICell>
