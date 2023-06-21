@@ -6,6 +6,8 @@ import { formatValue } from '../../utils/cellFormat';
 import { ICell } from '../../types/sheet';
 import toast from 'react-hot-toast';
 import { computeCell } from '../../utils/cells';
+import { useSearch } from '../../state/search';
+import { cellContainsSearchValue } from '../../utils/search';
 
 const selector = (s: ISheetsState) => {
   const selectedId = s.selectedSheetId;
@@ -29,9 +31,12 @@ export const CellItem: FC<Props> = ({
   last,
   rowOnEdit,
 }) => {
+  const { searchValue } = useSearch();
   const { updateCell, cells, setCellEdit } = useSheets(selector);
   const ref = useRef<HTMLInputElement>(null);
   const [cellValue, setCellValue] = useState(cell?.value || '')
+
+  const containsSearchVal = cellContainsSearchValue(searchValue, cellValue, cell?.computed);
 
   useEffect(() => {
     if (cell.edit && ref.current) {
@@ -73,9 +78,10 @@ export const CellItem: FC<Props> = ({
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const separator = last ? '' : 'border-r border-black/30';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
+  const searchStyle = containsSearchVal ? 'rounded-sm shadow-lg bg-green/30' : '';
 
   return (
-    <div className={`cell ${bgStyle} ${editStyle}`}>
+    <div className={`cell ${editStyle} ${searchStyle} ${bgStyle}`}>
       <div className={`w-full h-full py-2.5 ${separator}`}>
         {rowOnEdit ? (
           <input

@@ -1,18 +1,22 @@
-import { FC, KeyboardEvent, useState } from 'react';
+import { FC, KeyboardEvent, useEffect, useState } from 'react';
 import { SpyGlass } from '../svg/SpyGlass'
+import { useSearch } from '../../state/search';
 
-interface Props {
-  onEnter: (query: string) => void;
-}
-
-export const SearchInput: FC<Props> = ({ onEnter }) => {
+export const SearchInput: FC = () => {
+  const { setSearchVal } = useSearch()
   const [value, setValue] = useState('');
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      onEnter(value);
+      setSearchVal(value);
     }
   }
+
+  useEffect(() => {
+    if (!value) {
+      setSearchVal(null);
+    }
+  }, [value])
 
   return (
     <div className='flex w-full relative rounded-[5px] overflow-hidden'>
@@ -21,6 +25,7 @@ export const SearchInput: FC<Props> = ({ onEnter }) => {
       </div>
       <input
         value={value}
+        type="search"
         onKeyDown={onKeyDown}
         className='bg-layout w-full pl-10 pr-4 py-[7px] rounded-[5px] font-montserrat'
         onChange={e => setValue(e.target.value)}

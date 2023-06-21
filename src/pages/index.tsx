@@ -44,7 +44,7 @@ const Home = () => {
             )}
           </div>
         </div>
-        <SearchInput onEnter={console.log} />
+        <SearchInput />
         {isClient && <Sheet />}
       </main>
     </div>
