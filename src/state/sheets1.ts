@@ -1,5 +1,7 @@
+import { notationToCoordinates } from './../utils/cells';
 import { types, Instance, IAnyModelType } from "mobx-state-tree";
 import { coordinatesToNotation } from '../utils/cells';
+import { cellContainsSearchValue } from '../utils/search';
 
 const CellModel = types
   .model("Cell", {
@@ -18,6 +20,20 @@ const CellModel = types
     get computed() {
       return self.value;
     },
+  }))
+  .actions(self => ({
+    setValue(value: string) {
+      self.value = value;
+    },
+    setEdit(edit?: boolean) {
+      self.edit = !!edit;
+    },
+    containsSearchText(search?: string | null) {
+      if (typeof search == 'string') {
+        return cellContainsSearchValue(search, self.value, self.computed)
+      }
+      return false;
+    }
   }));
 
 type CellType = Instance<typeof CellModel>;
@@ -44,7 +60,19 @@ const SheetModel = types
     cells: types.array(types.array(CellModel)),
     updatedAt: types.maybe(types.string),
     savedAt: types.maybe(types.string),
-  });
+  })
+  .actions(self => ({
+    getCell(row: number, col: number) {
+      return self.cells[row]?.[col];
+    },
+    getCellById(id: string) {
+      const [row, col] = notationToCoordinates(id)
+      return self.cells[row]?.[col];
+    },
+    getRow(row: number) {
+      return self.cells[row];
+    }
+  }));
 
 type SheetType = Instance<typeof SheetModel>;
 

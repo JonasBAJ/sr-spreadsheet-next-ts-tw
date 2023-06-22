@@ -3,16 +3,16 @@ import { SearchInput } from "../components/inputs/SearchInput";
 import { useContinuousSync } from "../utils/hooks/useContinuousSync";
 import { Loader } from "../components/svg/Loader";
 import { useIsClient } from "../utils/hooks/useIsClient";
-import Sheet from "../components/girds/Sheet";
+import {Sheet} from "../components/girds/Sheet";
 import { getReadableStatus } from "../utils/status";
 import { Check } from "../components/svg/Check";
 import { ErrorSvg } from "../components/svg/ErrorSvg";
 import { observer } from 'mobx-react-lite';
-import { useState } from '../utils/hooks/useState';
+import { useGlobalState } from '../utils/hooks/useGlobalState';
 
 const Home = observer(() => {
+  const { sheets } = useGlobalState();
   const { isClient } = useIsClient();
-  const { sheets } = useState();
 
   // useContinuousSync();
 

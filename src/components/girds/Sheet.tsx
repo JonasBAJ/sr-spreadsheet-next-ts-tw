@@ -1,22 +1,12 @@
-import { ISheetsState, useSheets } from "../../state/sheets";
 import { RowItem } from "../items/RowItem";
+import { useGlobalState } from '../../utils/hooks/useGlobalState';
+import { observer } from 'mobx-react-lite';
 
-const selector = (s: ISheetsState) => {
-  const selectedId = s.selectedSheetId;
-  const sheet = selectedId ? s.sheets[selectedId] : null;
-  return {
-    cols: sheet?.cols,
-    rows: sheet?.rows,
-    colNames: sheet?.colNames,
-    addNewRow: s.addNewRow,
-  };
-};
-
-const Sheet = () => {
-  const { colNames, cols, rows, addNewRow } = useSheets(selector);
-  const gridTemplateColumns = "1fr ".repeat(cols || 0);
-  const rowsCount: number[] = Array(rows).fill(0);
-  const columnsCount: number[] = Array(cols).fill(0);
+export const Sheet = observer(() => {
+  const { sheets } = useGlobalState();
+  const gridTemplateColumns = "1fr ".repeat(sheets.selectedSheet?.cols || 0);
+  const rowsCount: number[] = Array(sheets.selectedSheet?.rows).fill(0);
+  const columnsCount: number[] = Array(sheets.selectedSheet?.cols).fill(0);
 
   return (
     <section className="w-full h-full mt-[14px]">
@@ -28,7 +18,7 @@ const Sheet = () => {
           >
             {columnsCount.map((_, i) => (
               <h2 key={i} className="col-header">
-                {colNames?.[i].value || "N/A"}
+                {sheets.selectedSheet?.colNames[i].value || "N/A"}
               </h2>
             ))}
           </div>
@@ -40,14 +30,12 @@ const Sheet = () => {
           ))}
         </section>
       </div>
-      <button
+      {/* <button
         onClick={addNewRow}
         className="sheet-btn w-full mt-4"
       >
         + Add Row
-      </button>
+      </button> */}
     </section>
   );
-};
-
-export default Sheet;
+});

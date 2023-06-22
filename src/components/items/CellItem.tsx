@@ -1,72 +1,40 @@
-import { FC, useEffect, useRef, KeyboardEvent, useState } from 'react';
+import { useEffect, useRef, KeyboardEvent, useState } from 'react';
 import { Pencil } from '../svg/Pencil';
-import { ISheetsState, useSheets } from '../../state/sheets';
-import { produce } from 'immer';
-import { formatValue } from '../../utils/cellFormat';
-import { ICell } from '../../types/sheet';
-import toast from 'react-hot-toast';
-import { computeCell } from '../../utils/cells';
 import { useSearch } from '../../state/search';
-import { cellContainsSearchValue } from '../../utils/search';
-
-const selector = (s: ISheetsState) => {
-  const selectedId = s.selectedSheetId;
-  const sheet = selectedId ? s.sheets[selectedId] : null;
-
-  return {
-    updateCell: s.updateCell,
-    setCellEdit: s.setCellEdit,
-    cells: sheet?.data,
-  }
-}
+import { observer } from 'mobx-react-lite';
+import { useGlobalState } from '../../utils/hooks/useGlobalState';
 
 interface Props {
-  cell: ICell;
+  row: number;
+  col: number;
   last?: boolean;
   rowOnEdit?: boolean;
 }
 
-export const CellItem: FC<Props> = ({
-  cell,
+export const CellItem = observer<Props>(({
+  row,
+  col,
   last,
   rowOnEdit,
 }) => {
-  const { searchValue } = useSearch();
-  const { updateCell, cells, setCellEdit } = useSheets(selector);
   const ref = useRef<HTMLInputElement>(null);
+  const { sheets } = useGlobalState();
+  const { searchValue } = useSearch();
+
+  const cell = sheets.selectedSheet?.getCell(row, col);
   const [cellValue, setCellValue] = useState(cell?.value || '')
 
-  const containsSearchVal = cellContainsSearchValue(searchValue, cellValue, cell?.computed);
-
   useEffect(() => {
-    if (cell.edit && ref.current) {
+    if (cell?.edit && ref.current) {
       ref.current.focus();
     }
-  }, [cell.edit, ref.current])
+  }, [cell?.edit, ref.current])
 
-  const toggleEdit = () => {
-    const newCell = produce(cell, draft => {
-      draft.edit = !draft.edit;
-    });
-    setCellEdit(newCell);
-  }
+  const toggleEdit = () => cell?.setEdit(!cell.edit);
 
   const onSubmit = () => {
-    try {
-      if (cellValue !== cell.value) {
-        const newCell = produce(cell, draft => {
-          draft.value = cellValue;
-          draft.edit = false;
-        });
-        const { computed } = computeCell(newCell, cells || {});
-        if (computed?.error && computed.message) {
-          toast.error(`${computed.id}: ${computed.message}`);
-        }
-        updateCell(newCell);
-      }
-    } catch (e: any) {
-      toast.error(e.message);
-    }
+    cell?.setValue(cellValue);
+    cell?.setEdit(false);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -78,7 +46,7 @@ export const CellItem: FC<Props> = ({
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const separator = last ? '' : 'border-r border-black/30';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
-  const searchStyle = containsSearchVal ? 'rounded-sm shadow-lg bg-green/30' : '';
+  const searchStyle = cell?.containsSearchText(searchValue) ? 'rounded-sm shadow-lg bg-green/30' : '';
 
   return (
     <div className={`cell ${editStyle} ${searchStyle} ${bgStyle}`}>
@@ -86,15 +54,15 @@ export const CellItem: FC<Props> = ({
         {rowOnEdit ? (
           <input
             ref={ref}
-            onKeyDown={onKeyDown}
-            className='cell-input'
             value={cellValue}
             onBlur={onSubmit}
+            onKeyDown={onKeyDown}
+            className='cell-input'
             onChange={e => setCellValue(e.target.value)}
           />
         ) : (
           <p className='h-[24px]'>
-            {formatValue(cell)}
+            {cell?.computed}
           </p>
         )}
       </div>
@@ -103,4 +71,4 @@ export const CellItem: FC<Props> = ({
       </button>
     </div>
   );
-};
+});

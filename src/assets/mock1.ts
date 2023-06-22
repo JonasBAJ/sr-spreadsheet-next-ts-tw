@@ -4,7 +4,7 @@ import { SheetModel, SheetsStateModel } from '../state/sheets1';
 export const mockSheet: SnapshotIn<typeof SheetModel> = {
   id: "sh_demo",
   cols: 3,
-  rows: 3,
+  rows: 2,
   title: 'Your Personal Staking Calculator',
   colNames: [
     {
