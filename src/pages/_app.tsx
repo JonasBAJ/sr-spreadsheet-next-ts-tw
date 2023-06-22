@@ -2,6 +2,7 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { Montserrat } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { StoreProvider, rootStore } from '../state'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
@@ -20,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         `}
       </style>
-      <Component {...pageProps} />
+      <StoreProvider value={rootStore}>
+        <Component {...pageProps} />
+      </StoreProvider>
       <Toaster
         position="top-center"
         reverseOrder={false}
