@@ -30,12 +30,12 @@ export const Sheet = observer(() => {
           ))}
         </section>
       </div>
-      {/* <button
-        onClick={addNewRow}
+      <button
         className="sheet-btn w-full mt-4"
+        onClick={sheets.selectedSheet?.addRow}
       >
         + Add Row
-      </button> */}
+      </button>
     </section>
   );
 });

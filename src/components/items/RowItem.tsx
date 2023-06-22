@@ -12,7 +12,7 @@ export const RowItem = observer<Props>(({ row }) => {
 
   const cells: number[] = Array(sheets.selectedSheet?.cols).fill(0);
   const rowOnEdit = sheet?.getRow(row)?.some((c) => c?.edit);
-  const rowOnError = sheet?.getRow(row)?.some((c) => c?.error);
+  const rowOnError = sheet?.getRow(row)?.some((c) => c?.computed === '#VALUE!');
 
   const gridTemplateColumns = "1fr ".repeat(sheet?.cols || 0);
   const errorStyle = rowOnError

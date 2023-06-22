@@ -29,10 +29,7 @@ export const CellItem = observer<Props>(({
   }, [cell?.edit, ref.current])
 
   const toggleEdit = () => cell?.setEdit(!cell.edit);
-
-  const onSubmit = () => {
-    cell?.setValue(cellValue);
-  };
+  const onSubmit = () => cell?.setValue(cellValue);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

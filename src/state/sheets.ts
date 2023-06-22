@@ -9,8 +9,6 @@ const CellModel = types
     col: types.number,
     edit: types.boolean,
     value: types.string,
-    error: types.maybe(types.boolean),
-    message: types.maybe(types.string),
   })
   .views(self => ({
     get id() {
@@ -22,7 +20,7 @@ const CellModel = types
         const sheet = getParent<SheetType>(self, 3);
         const refValues = refCellIds.map(id => ({
           id,
-          value: sheet.getCellById(id).computed,
+          value: sheet.getCellById(id)?.computed,
         }));
         const refValuesMap = refValues.reduce((acc, obj) => acc.set(obj.id, obj.value), new Map());
         const formula = getFormula(self.value, refValuesMap)
