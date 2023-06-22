@@ -8,6 +8,7 @@ export const Sheet = observer(() => {
   const rowsCount: number[] = Array(sheets.selectedSheet?.rows).fill(0);
   const columnsCount: number[] = Array(sheets.selectedSheet?.cols).fill(0);
 
+  console.log(sheets.selectedSheet?.cells);
   return (
     <section className="w-full h-full mt-[14px]">
       <div className='overflow-x-scroll'>

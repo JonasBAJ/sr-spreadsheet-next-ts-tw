@@ -1,5 +1,5 @@
 import { notationToCoordinates } from '../utils/cells';
-import { types, Instance, IAnyModelType } from "mobx-state-tree";
+import { types, Instance, IAnyModelType, SnapshotIn } from "mobx-state-tree";
 import { coordinatesToNotation } from '../utils/cells';
 import { cellContainsSearchValue } from '../utils/search';
 
@@ -11,7 +11,7 @@ const CellModel = types
     value: types.string,
     error: types.maybe(types.boolean),
     message: types.maybe(types.string),
-    inputCells: types.maybe(types.array(types.late((): IAnyModelType => CellModel))),
+    inputCells: types.maybe(types.map(types.late((): IAnyModelType => CellModel))),
   })
   .views(self => ({
     get id() {
@@ -69,8 +69,28 @@ const SheetModel = types
       const [row, col] = notationToCoordinates(id)
       return self.cells[row]?.[col];
     },
+    createCell(cell: SnapshotIn<CellType>) {
+      const newCell = CellModel.create(cell);
+      if (!self.cells[cell.row]) self.cells.push([]);
+      self.cells[cell.row][cell.col] = newCell;
+      return self.cells[cell.row][cell.col];
+    },
+    getOrCreateCell(row: number, col: number) {
+      if (self.cells[row]?.[col]) {
+        return self.cells[row]?.[col];
+      }
+      return this.createCell({
+        row,
+        col,
+        edit: false,
+        value: '',
+      });
+    },
     getRow(row: number) {
       return self.cells[row];
+    },
+    addRow() {
+      self.rows += 1
     }
   }));
 

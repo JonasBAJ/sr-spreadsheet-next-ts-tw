@@ -21,7 +21,7 @@ export const CellItem = observer<Props>(({
   const { sheets } = useGlobalState();
   const { searchValue } = useSearch();
 
-  const cell = sheets.selectedSheet?.getCell(row, col);
+  const cell = sheets.selectedSheet?.getOrCreateCell(row, col);
   const [cellValue, setCellValue] = useState(cell?.value || '')
 
   useEffect(() => {
@@ -34,7 +34,6 @@ export const CellItem = observer<Props>(({
 
   const onSubmit = () => {
     cell?.setValue(cellValue);
-    cell?.setEdit(false);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {

@@ -1,7 +1,7 @@
 import { Instance, types } from 'mobx-state-tree';
 import { createContext } from 'react';
 import {SheetsStateModel} from './sheets';
-import { initialState } from '../assets/mock1';
+import { initialState } from '../assets/mock';
 
 export const rootStore = types
   .model({

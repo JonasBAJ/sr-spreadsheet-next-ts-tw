@@ -1,9 +1,11 @@
-import { ISheet } from "../types/sheet";
+import { SnapshotIn } from 'mobx-state-tree';
+import { SheetModel, SheetsStateModel } from '../state/sheets';
 
-export const mockSheet: ISheet = {
+export const mockSheet: SnapshotIn<typeof SheetModel> = {
   id: "sh_demo",
   cols: 3,
   rows: 3,
+  title: 'Your Personal Staking Calculator',
   colNames: [
     {
       col: 0,
@@ -18,48 +20,23 @@ export const mockSheet: ISheet = {
       value: "Annual Reward in $",
     },
   ],
-  data: {
-    A1: {
-      id: "A1",
-      edit: false,
-      value: "1000",
-      outputCells: {},
-      inputCells: {},
-    },
-    B1: {
-      id: "B1",
-      edit: false,
-      value: "15",
-      outputCells: {},
-      inputCells: {},
-    },
-    C1: {
-      id: "C1",
-      edit: false,
-      value: "=A1*B1",
-      outputCells: {},
-      inputCells: {}
-    },
-    A2: {
-      id: "A2",
-      edit: false,
-      value: "1000",
-      outputCells: {},
-      inputCells: {},
-    },
-    B2: {
-      id: "B2",
-      edit: false,
-      value: "15",
-      outputCells: {},
-      inputCells: {},
-    },
-    C2: {
-      id: "C2",
-      edit: false,
-      value: "=A1*B1",
-      outputCells: {},
-      inputCells: {}
-    },
+  cells: [
+    [
+      { row: 1, col: 1, edit: false, value: "1000" },
+      { row: 1, col: 2, edit: false, value: "15" },
+      { row: 1, col: 3, edit: false, value: "=A1*B1" },
+    ],
+    [
+      { row: 2, col: 1, edit: false, value: "1000" },
+      { row: 2, col: 2, edit: false, value: "15" },
+      { row: 2, col: 3, edit: false, value: "=A1*B1" },
+    ],
+  ],
+};
+
+export const initialState: SnapshotIn<typeof SheetsStateModel> = {
+  selectedSheetId: 'sh_demo',
+  sheets: {
+    'sh_demo': mockSheet
   },
 };
