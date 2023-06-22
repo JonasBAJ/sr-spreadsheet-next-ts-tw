@@ -1,6 +1,5 @@
 import { useEffect, useRef, KeyboardEvent, useState } from 'react';
 import { Pencil } from '../svg/Pencil';
-import { useSearch } from '../../state/search';
 import { observer } from 'mobx-react-lite';
 import { useGlobalState } from '../../utils/hooks/useGlobalState';
 
@@ -18,8 +17,7 @@ export const CellItem = observer<Props>(({
   rowOnEdit,
 }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const { sheets } = useGlobalState();
-  const { searchValue } = useSearch();
+  const { sheets, search } = useGlobalState();
 
   const cell = sheets.selectedSheet?.getOrCreateCell(row, col);
   const [cellValue, setCellValue] = useState(cell?.value || '')
@@ -45,7 +43,7 @@ export const CellItem = observer<Props>(({
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const separator = last ? '' : 'border-r border-black/30';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
-  const searchStyle = cell?.containsSearchText(searchValue) ? 'rounded-sm shadow-lg bg-green/30' : '';
+  const searchStyle = cell?.containsSearchText(search.searchValue) ? 'rounded-sm shadow-lg bg-green/30' : '';
 
   return (
     <div className={`cell ${editStyle} ${searchStyle} ${bgStyle}`}>

@@ -26,7 +26,8 @@ export const getFormula = (
   const formula = cellFormula.toUpperCase();
   return formula
     .replace(regex, (match) => formulaValues.get(match) || '')
-    .replace("=", "");
+    .replace("=", "")
+    .replace(/%/g, "/100");
 };
 
 const validateFormula = (formula: string) => {

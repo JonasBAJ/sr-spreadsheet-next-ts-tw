@@ -1,20 +1,21 @@
-import { FC, KeyboardEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import { SpyGlass } from '../svg/SpyGlass'
-import { useSearch } from '../../state/search';
+import { useGlobalState } from '../../utils/hooks/useGlobalState';
+import { observer } from 'mobx-react-lite';
 
-export const SearchInput: FC = () => {
-  const { setSearchVal } = useSearch()
+export const SearchInput = observer(() => {
+  const { search } = useGlobalState();
   const [value, setValue] = useState('');
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setSearchVal(value);
+      search.setSearchVal(value);
     }
   }
 
   useEffect(() => {
     if (!value) {
-      setSearchVal(null);
+      search.setSearchVal(undefined);
     }
   }, [value])
 
@@ -33,4 +34,4 @@ export const SearchInput: FC = () => {
       />
     </div>
   )
-}
+})

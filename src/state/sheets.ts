@@ -4,7 +4,7 @@ import { cellContainsSearchValue } from '../utils/search';
 import { evaluateFormula, extractCellRefs, getFormula, notationToCoordinates } from '../utils/cells';
 
 const CellModel = types
-  .model("Cell", {
+  .model("CellModel", {
     row: types.number,
     col: types.number,
     edit: types.boolean,
@@ -26,7 +26,7 @@ const CellModel = types
         }));
         const refValuesMap = refValues.reduce((acc, obj) => acc.set(obj.id, obj.value), new Map());
         const formula = getFormula(self.value, refValuesMap)
-        return evaluateFormula(formula);
+        return String(evaluateFormula(formula));
       }
       return self.value;
     },
@@ -38,9 +38,9 @@ const CellModel = types
     setEdit(edit?: boolean) {
       self.edit = !!edit;
     },
-    containsSearchText(search?: string | null) {
+    containsSearchText(search?: string) {
       if (typeof search == 'string') {
-        return cellContainsSearchValue(search, self.value, self.computed)
+        return cellContainsSearchValue(search, self.computed)
       }
       return false;
     }
@@ -49,7 +49,7 @@ const CellModel = types
 type CellType = Instance<typeof CellModel>;
 
 const ColHeaderModel = types
-  .model("ColHeader", {
+  .model("ColHeaderModel", {
     col: types.number,
     value: types.string,
   });
@@ -59,7 +59,7 @@ type ColHeaderType = Instance<typeof ColHeaderModel>;
 const SyncStatus = types.enumeration('SyncStatus', ['IN_PROGRESS', 'DONE', 'ERROR']);
 
 const SheetModel = types
-  .model("Sheet", {
+  .model("SheetModel", {
     id: types.identifier,
     status: types.maybe(SyncStatus),
     serverId: types.maybe(types.string),
@@ -107,8 +107,8 @@ const SheetModel = types
 type SheetType = Instance<typeof SheetModel>;
 
 const SheetsStateModel = types
-  .model("SheetsState", {
-    selectedSheetId: types.maybeNull(types.string),
+  .model("SheetsStateModel", {
+    selectedSheetId: types.maybe(types.string),
     sheets: types.map(SheetModel),
   })
   .views(self => ({
@@ -120,7 +120,7 @@ const SheetsStateModel = types
     }
   }))
   .actions(self => ({
-    setSelectedSheetId(id: string | null) {
+    setSelectedSheetId(id: string | undefined) {
       self.selectedSheetId = id;
     },
     addSheet(sheet: SheetType) {
