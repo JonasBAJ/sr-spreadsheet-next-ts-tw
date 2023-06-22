@@ -1,7 +1,7 @@
-import { notationToCoordinates } from '../utils/cells';
-import { types, Instance, IAnyModelType, SnapshotIn } from "mobx-state-tree";
+import { types, Instance, SnapshotIn, getParent } from "mobx-state-tree";
 import { coordinatesToNotation } from '../utils/cells';
 import { cellContainsSearchValue } from '../utils/search';
+import { evaluateFormula, extractCellRefs, getFormula, notationToCoordinates } from '../utils/cells';
 
 const CellModel = types
   .model("Cell", {
@@ -11,13 +11,23 @@ const CellModel = types
     value: types.string,
     error: types.maybe(types.boolean),
     message: types.maybe(types.string),
-    inputCells: types.maybe(types.map(types.late((): IAnyModelType => CellModel))),
   })
   .views(self => ({
     get id() {
       return coordinatesToNotation(self.row, self.col);
     },
     get computed() {
+      const refCellIds = extractCellRefs(self.value);
+      if (self.value.startsWith('=') && refCellIds?.length) {
+        const sheet = getParent<SheetType>(self, 3);
+        const refValues = refCellIds.map(id => ({
+          id,
+          value: sheet.getCellById(id).computed,
+        }));
+        const refValuesMap = refValues.reduce((acc, obj) => acc.set(obj.id, obj.value), new Map());
+        const formula = getFormula(self.value, refValuesMap)
+        return evaluateFormula(formula);
+      }
       return self.value;
     },
   }))
