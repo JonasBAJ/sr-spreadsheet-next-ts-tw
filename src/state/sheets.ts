@@ -1,7 +1,16 @@
 import { types, Instance, SnapshotIn, getParent } from "mobx-state-tree";
-import { coordinatesToNotation } from '../utils/cells';
-import { cellContainsSearchValue } from '../utils/search';
-import { evaluateFormula, extractCellRefs, getFormula, notationToCoordinates } from '../utils/cells';
+import { coordinatesToNotation } from "../utils/cells";
+import { cellContainsSearchValue } from "../utils/search";
+import {
+  evaluateFormula,
+  extractCellRefs,
+  getFormula,
+  notationToCoordinates,
+} from "../utils/cells";
+import { IApiRes } from "../apis/api";
+import { flow } from "mobx";
+import { CancellablePromise } from "mobx/dist/api/flow";
+import { runSaveCsvTask } from '../utils/csv';
 
 const CellModel = types
   .model("CellModel", {
@@ -10,51 +19,61 @@ const CellModel = types
     edit: types.boolean,
     value: types.string,
   })
-  .views(self => ({
+  .views((self) => ({
     get id() {
       return coordinatesToNotation(self.row, self.col);
     },
     get computed() {
       const refCellIds = extractCellRefs(self.value);
-      if (self.value.startsWith('=') && refCellIds?.length) {
+      if (self.value.startsWith("=") && refCellIds?.length) {
         const sheet = getParent<SheetType>(self, 3);
-        const refValues = refCellIds.map(id => ({
+        const refValues = refCellIds.map((id) => ({
           id,
           value: sheet.getCellById(id)?.computed,
         }));
-        const refValuesMap = refValues.reduce((acc, obj) => acc.set(obj.id, obj.value), new Map());
-        const formula = getFormula(self.value, refValuesMap)
+        const refValuesMap = refValues.reduce(
+          (acc, obj) => acc.set(obj.id, obj.value),
+          new Map()
+        );
+        const formula = getFormula(self.value, refValuesMap);
         return String(evaluateFormula(formula));
       }
       return self.value;
     },
   }))
-  .actions(self => ({
+  .actions((self) => ({
     setValue(value: string) {
       self.value = value;
+      const sheet = getParent<SheetType>(self, 3);
+      sheet.saveSheet();
     },
     setEdit(edit?: boolean) {
       self.edit = !!edit;
     },
     containsSearchText(search?: string) {
-      if (typeof search == 'string') {
-        return cellContainsSearchValue(search, self.computed)
+      if (typeof search == "string") {
+        return cellContainsSearchValue(search, self.computed);
       }
       return false;
-    }
+    },
   }));
 
 type CellType = Instance<typeof CellModel>;
 
-const ColHeaderModel = types
-  .model("ColHeaderModel", {
-    col: types.number,
-    value: types.string,
-  });
+const ColHeaderModel = types.model("ColHeaderModel", {
+  col: types.number,
+  value: types.string,
+});
 
 type ColHeaderType = Instance<typeof ColHeaderModel>;
 
-const SyncStatus = types.enumeration('SyncStatus', ['IN_PROGRESS', 'DONE', 'ERROR']);
+const SyncStatus = types.enumeration("SyncStatus", [
+  "IN_PROGRESS",
+  "DONE",
+  "ERROR",
+]);
+
+type SyncStatusType = Instance<typeof SyncStatus>
 
 const SheetModel = types
   .model("SheetModel", {
@@ -66,41 +85,64 @@ const SheetModel = types
     title: types.maybe(types.string),
     colNames: types.array(ColHeaderModel),
     cells: types.array(types.array(CellModel)),
-    updatedAt: types.maybe(types.string),
     savedAt: types.maybe(types.string),
   })
-  .actions(self => ({
-    getCell(row: number, col: number) {
-      return self.cells[row]?.[col];
-    },
-    getCellById(id: string) {
-      const [row, col] = notationToCoordinates(id)
-      return self.cells[row]?.[col];
-    },
-    createCell(cell: SnapshotIn<CellType>) {
-      const newCell = CellModel.create(cell);
-      if (!self.cells[cell.row]) self.cells.push([]);
-      self.cells[cell.row][cell.col] = newCell;
-      return self.cells[cell.row][cell.col];
-    },
-    getOrCreateCell(row: number, col: number) {
-      if (self.cells[row]?.[col]) {
+  .actions((self) => {
+    let saveTask: CancellablePromise<IApiRes | void>;
+
+    return {
+      getCell(row: number, col: number) {
         return self.cells[row]?.[col];
-      }
-      return this.createCell({
-        row,
-        col,
-        edit: false,
-        value: '',
-      });
-    },
-    getRow(row: number) {
-      return self.cells[row];
-    },
-    addRow() {
-      self.rows += 1
-    }
-  }));
+      },
+      getCellById(id: string) {
+        const [row, col] = notationToCoordinates(id);
+        return self.cells[row]?.[col];
+      },
+      createCell(cell: SnapshotIn<CellType>) {
+        const newCell = CellModel.create(cell);
+        if (!self.cells[cell.row]) self.cells.push([]);
+        self.cells[cell.row][cell.col] = newCell;
+        return self.cells[cell.row][cell.col];
+      },
+      getOrCreateCell(row: number, col: number) {
+        if (self.cells[row]?.[col]) {
+          return self.cells[row]?.[col];
+        }
+        return this.createCell({
+          row,
+          col,
+          edit: false,
+          value: "",
+        });
+      },
+      getRow(row: number) {
+        return self.cells[row];
+      },
+      addRow() {
+        self.rows += 1;
+        this.saveSheet();
+      },
+      setMeta(status: SyncStatusType, serverId?: string, savedAt?: string) {
+        self.status = status;
+        if (savedAt) self.savedAt = savedAt;
+        if (serverId) self.serverId = serverId;
+      },
+      saveSheet() {
+        if (saveTask) {
+          saveTask.cancel();
+        }
+        self.status = "IN_PROGRESS";
+        saveTask = flow(runSaveCsvTask)(self.colNames, self.cells);
+        saveTask.then(res => {
+          if (res) {
+            this.setMeta(res.status, res.id, res.done_at);
+          } else {
+            this.saveSheet();
+          }
+        })
+      },
+    };
+  });
 
 type SheetType = Instance<typeof SheetModel>;
 
@@ -109,15 +151,15 @@ const SheetsStateModel = types
     selectedSheetId: types.maybe(types.string),
     sheets: types.map(SheetModel),
   })
-  .views(self => ({
+  .views((self) => ({
     get selectedSheet() {
       if (!self.selectedSheetId) {
-        return null;
+        return undefined;
       }
-      return self.sheets.get(self.selectedSheetId)
-    }
+      return self.sheets.get(self.selectedSheetId);
+    },
   }))
-  .actions(self => ({
+  .actions((self) => ({
     setSelectedSheetId(id: string | undefined) {
       self.selectedSheetId = id;
     },
@@ -128,15 +170,5 @@ const SheetsStateModel = types
 
 type SheetsStateType = Instance<typeof SheetsStateModel>;
 
-export {
-  SheetModel,
-  ColHeaderModel,
-  SheetsStateModel
-}
-export type {
-  CellType,
-  SheetType,
-  ColHeaderType,
-  SheetsStateType,
-}
-
+export { SheetModel, ColHeaderModel, SheetsStateModel };
+export type { CellType, SheetType, ColHeaderType, SheetsStateType };

@@ -1,12 +1,15 @@
 import { RowItem } from "../items/RowItem";
 import { useGlobalState } from '../../utils/hooks/useGlobalState';
 import { observer } from 'mobx-react-lite';
+// import { useContinuousSync } from '../../utils/hooks/useContinuousSync';
 
 export const Sheet = observer(() => {
   const { sheets } = useGlobalState();
   const gridTemplateColumns = "1fr ".repeat(sheets.selectedSheet?.cols || 0);
   const rowsCount: number[] = Array(sheets.selectedSheet?.rows).fill(0);
   const columnsCount: number[] = Array(sheets.selectedSheet?.cols).fill(0);
+
+  // useContinuousSync()
 
   return (
     <section className="w-full h-full mt-[14px]">

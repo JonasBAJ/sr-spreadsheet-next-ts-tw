@@ -1,34 +1,33 @@
 // import { useCallback, useEffect, useRef } from 'react';
-// import { ISheetsState, useSheets } from '../../state/sheets'
 // import { Api } from '../../apis/api';
 // import { sheetToCsv } from '../csv';
 // import { toast } from 'react-hot-toast';
-
-// const selector = (s: ISheetsState) => {
-//   const selectedId = s.selectedSheetId;
-//   const sheet = selectedId ? s.sheets[selectedId] : null;
-//   return {
-//     sheet,
-//     updateSheet: s.updateSheet,
-//   }
-// }
+// import { useGlobalState } from './useGlobalState';
 
 // export const useContinuousSync = () => {
 //   const initialRun = useRef(true);
-//   const { sheet, updateSheet } = useSheets(selector);
+//   const { sheets } = useGlobalState();
+//   const sheet = sheets.selectedSheet;
 //   const updatedAtRef = useRef(sheet?.updatedAt);
+
+//   console.log({
+//     status: sheets.selectedSheet?.status,
+//     serverId: sheets.selectedSheet?.serverId,
+//     updatedAt: sheets.selectedSheet?.updatedAt,
+//   })
 
 //   const checkStatus = useCallback(async () => {
 //     try {
 //       if (sheet?.serverId) {
 //         const res = await Api.getStaus(sheet.serverId);
-//         updateSheet({
-//           status: res.status,
-//         });
+//         sheet?.setMeta(res.status);
+//         if (!sheet.updatedAt) {
+//           sheet.updateTimestamp()
+//         }
 //       }
 //     } catch (e) {
 //       console.log(e);
-//       updateSheet({ status: 'ERROR' });
+//       sheet?.setMeta('ERROR');
 //       toast.error('Error while checking status... Retying now!');
 //     }
 //   }, [sheet]);
@@ -37,16 +36,12 @@
 //     if (!sheet) return;
 //     try {
 //       const csv = sheetToCsv(sheet);
-//       updateSheet({ status: 'IN_PROGRESS' });
+//       sheet?.setMeta('IN_PROGRESS');
 //       const res = await Api.saveCsvSheet(csv);
-//       updateSheet({
-//         serverId: res.id,
-//         savedAt: res.done_at,
-//         status: res.status,
-//       });
+//       sheet?.setMeta(res.status, res.id, res.done_at);
 //     } catch (e: any) {
 //       console.log(e);
-//       updateSheet({ status: 'ERROR' });
+//       sheet?.setMeta('ERROR');
 //       toast.error('Error while saving data... Retying now!')
 //     }
 //   }, [sheet])
@@ -69,11 +64,12 @@
 //       if (sheet?.status === 'ERROR') {
 //         saveSheet();
 //       } else if (sheet?.status === 'IN_PROGRESS') {
+//         console.log('IN_PROGRESS')
 //         const timeout = setTimeout(checkStatus, 15000);
 //         return () => clearTimeout(timeout);
 //       }
 //     }
-//   }, [sheet, initialRun])
+//   }, [sheet?.status, initialRun])
 
 //   // Save data after cell updates
 //   useEffect(() => {
@@ -81,5 +77,5 @@
 //       saveSheet();
 //       updatedAtRef.current = sheet?.updatedAt;
 //     }
-//   }, [updatedAtRef, sheet])
+//   }, [updatedAtRef, sheet?.updatedAt])
 // }

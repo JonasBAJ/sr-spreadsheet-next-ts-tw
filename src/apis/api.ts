@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-interface IApiRes {
+export interface IApiRes {
   id?: string;
   done_at?: string,
   status: 'IN_PROGRESS' | 'DONE';
