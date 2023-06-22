@@ -1,5 +1,5 @@
 import { SnapshotIn } from 'mobx-state-tree';
-import { SheetModel, SheetsStateModel } from '../state/sheets1';
+import { SheetModel, SheetsStateModel } from '../state/sheets';
 
 export const mockSheet: SnapshotIn<typeof SheetModel> = {
   id: "sh_demo",

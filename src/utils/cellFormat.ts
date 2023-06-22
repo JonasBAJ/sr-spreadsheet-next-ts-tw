@@ -1,4 +1,4 @@
-import { CellType } from '../state/sheets1';
+import { CellType } from '../state/sheets';
 import { ICell } from '../types/sheet';
 
 export const getCellValue = (cell?: CellType | null) => {
