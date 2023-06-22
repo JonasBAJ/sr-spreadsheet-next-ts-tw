@@ -1,5 +1,5 @@
 import { Instance, types } from 'mobx-state-tree';
-import { SheetModel, SheetType } from '../sheets';
+import { SheetModel, SheetType } from '../sheets/sheet';
 
 export const SheetsStateModel = types
   .model("SheetsStateModel", {

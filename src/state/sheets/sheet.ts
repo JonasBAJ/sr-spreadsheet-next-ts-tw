@@ -14,10 +14,9 @@ const ColHeaderModel = types.model("ColHeaderModel", {
 const SyncStatus = types.enumeration("SyncStatus", [
   "IN_PROGRESS",
   "DONE",
-  "ERROR",
 ]);
 
-type SyncStatusType = Instance<typeof SyncStatus>
+export type SyncStatusType = Instance<typeof SyncStatus>
 
 export const SheetModel = types
   .model("SheetModel", {

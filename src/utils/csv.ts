@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 import { Api, IApiRes } from '../apis/api';
-import { SheetType } from '../state/sheets';
+import { SheetType } from '../state/sheets/sheet';
 
 export const sheetToCsv = (
   colNames: SheetType['colNames'],
@@ -28,7 +28,6 @@ export function* runSaveCsvTask(
 ) {
   try {
     const csv = sheetToCsv(colNames, cells);
-    console.log(csv);
     const res1: IApiRes = yield Api.saveCsvSheet(csv);
 
     if (res1.status === 'IN_PROGRESS' && res1.done_at) {
