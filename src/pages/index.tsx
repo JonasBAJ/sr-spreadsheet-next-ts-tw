@@ -6,6 +6,17 @@ import { getReadableStatus } from "../utils/status";
 import { Check } from "../components/svg/Check";
 import { observer } from "mobx-react-lite";
 import { useGlobalState } from "../utils/hooks/useGlobalState";
+import { DocumentContext } from "next/document";
+import { getCookie } from "cookies-next";
+
+export const getServerSideProps = (ctx: DocumentContext) => {
+  const storeSnaptchot = getCookie("store", ctx);
+  return {
+    props: {
+      storeSnaptchot
+    },
+  };
+};
 
 const Home = observer(() => {
   const { sheets } = useGlobalState();

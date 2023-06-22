@@ -9,6 +9,7 @@ import { ComponentType, FC, createContext } from "react";
 import { initialState } from "../assets/mock";
 import { SearchModel } from "./search";
 import { SheetsStateModel } from "./sheets";
+import { setCookie } from 'cookies-next';
 
 export const RootStore = types.model({
   search: SearchModel,
@@ -27,19 +28,15 @@ export const initializeStore = (snapshot?: SnapshotIn<AppState>): AppState => {
 
     if (typeof window !== "undefined") {
       // Persist state on change
-      onSnapshot(store, (newSnapshot) => {
-        localStorage.setItem("store", JSON.stringify(newSnapshot.sheets));
+      onSnapshot(store, snap => {
+        setCookie('store', JSON.stringify(snap));
       });
     }
   }
 
   if (snapshot) {
-    applySnapshot(store, snapshot);
-  } else if (typeof window !== "undefined") {
-    // Try to get state from local storage, but only on the client side
-    const savedStore = localStorage.getItem("store");
-    if (savedStore) {
-      applySnapshot(store.sheets, JSON.parse(savedStore));
+    if (Object.keys(snapshot.sheets).length > 0) {
+      applySnapshot(store.sheets, snapshot.sheets);
     }
   }
 
@@ -59,14 +56,15 @@ export const RootStoreContext = createContext<null | Instance<
 >>(null);
 export const StoreProvider = RootStoreContext.Provider;
 
-export const Provider: FC<{ Component: ComponentType }> = ({
+export const Provider: FC<{
+  Component: ComponentType
+  storeSnaptchot?: string
+}> = ({
   Component,
+  storeSnaptchot,
   ...rest
 }) => {
-  const store =
-    typeof window !== "undefined"
-      ? initializeStore(window.__INITIAL_STATE__)
-      : initializeStore();
+  const store = initializeStore(JSON.parse(storeSnaptchot || ''));
 
   return (
     <StoreProvider value={store}>
