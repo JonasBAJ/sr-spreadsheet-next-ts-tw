@@ -37,7 +37,6 @@ export const RowItem = observer<Props>(({ row }) => {
           );
         })}
       </div>
-      {/* <button onClick={() => removeRow(row)} className="sheet-btn">-</button> */}
     </div>
   );
 });

@@ -27,7 +27,6 @@ export const Sheet = observer(() => {
               </h2>
             ))}
           </div>
-          {/* <button className="sheet-btn">+</button> */}
         </header>
         <section className="flex flex-col gap-1 max-h-[70vh]">
           {rowsCount.map((_, i) => (

@@ -51,6 +51,9 @@ export const SheetModel = types
         if (savedAt) self.savedAt = savedAt;
         if (serverId) self.serverId = serverId;
       },
+      setTitle(title: string) {
+        self.title = title;
+      },
       addRow() {
         self.rows += 1;
         const newRow = Array(self.cols).fill(0).map((_, i) => CellModel.create({
