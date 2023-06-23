@@ -1,10 +1,11 @@
 import { flow } from 'mobx';
-import { runSaveCsvTask } from '../../utils/csv';
 import { Instance, SnapshotIn, types } from 'mobx-state-tree';
 import { CancellablePromise } from 'mobx/dist/internal';
-import { IApiRes } from '../../apis/api';
+import { Api, IApiRes } from '../../apis/api';
 import { notationToCoordinates } from '../../utils/cells';
 import { CellModel, CellType } from '../sheets/cell';
+import { runCheckStatus, runSaveCsvTask } from '../../utils/sheet';
+import toast from 'react-hot-toast';
 
 const ColHeaderModel = types.model("ColHeaderModel", {
   col: types.number,
@@ -31,7 +32,8 @@ export const SheetModel = types
     savedAt: types.maybe(types.string),
   })
   .actions((self) => {
-    let saveTask: CancellablePromise<IApiRes | void>;
+    let saveTask: CancellablePromise<IApiRes | null>;
+    let checkStatusTask: CancellablePromise<IApiRes | null>;
 
     return {
       getCell(row: number, col: number) {
@@ -80,9 +82,25 @@ export const SheetModel = types
           if (res) {
             this.setMeta(res.status, res.id, res.done_at);
           } else {
+            toast.error('Error saving data... Retrying now!')
             this.saveSheet();
           }
         })
+      },
+      checkStatus() {
+        if (self.serverId) {
+          checkStatusTask = flow(runCheckStatus)(self.serverId);
+          checkStatusTask.then(res => {
+            if (res) {
+              this.setMeta(res.status, res.id, res.done_at);
+            } else {
+              toast.error('Error checking status... Retrying now!')
+              this.checkStatus();
+            }
+          })
+        } else {
+          this.saveSheet();
+        }
       },
     };
   });

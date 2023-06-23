@@ -1,7 +1,7 @@
 import { RowItem } from "../items/RowItem";
 import { useGlobalState } from '../../utils/hooks/useGlobalState';
 import { observer } from 'mobx-react-lite';
-// import { useContinuousSync } from '../../utils/hooks/useContinuousSync';
+import { useEffect } from 'react';
 
 export const Sheet = observer(() => {
   const { sheets } = useGlobalState();
@@ -9,7 +9,9 @@ export const Sheet = observer(() => {
   const rowsCount: number[] = Array(sheets.selectedSheet?.rows).fill(0);
   const columnsCount: number[] = Array(sheets.selectedSheet?.cols).fill(0);
 
-  // useContinuousSync()
+  useEffect(() => {
+    sheets.selectedSheet?.checkStatus();
+  }, [sheets.selectedSheet?.id])
 
   return (
     <section className="w-full h-full mt-[14px]">
