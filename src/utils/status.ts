@@ -6,4 +6,4 @@ export const getReadableStatus = (status?: SyncStatusType) => {
     IN_PROGRESS: 'Syncing',
     DONE: 'Saved',
   }[status];
-}
+};

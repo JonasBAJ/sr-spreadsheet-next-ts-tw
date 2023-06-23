@@ -9,15 +9,15 @@ export const getNewSheet = (): SnapshotIn<typeof SheetModel> => ({
   colNames: [
     {
       col: 0,
-      value: "Price",
+      value: 'Price',
     },
     {
       col: 1,
-      value: "Reward Rate",
+      value: 'Reward Rate',
     },
     {
       col: 2,
-      value: "Annual Reward in $",
+      value: 'Annual Reward in $',
     },
   ],
   cells: [],

@@ -6,7 +6,7 @@ export const getRowCells = (row: number, colCount: number): string[] => {
   let cells: string[] = [];
 
   for (let col = 0; col < colCount; col++) {
-    const colLetter = String.fromCharCode("A".charCodeAt(0) + col);
+    const colLetter = String.fromCharCode('A'.charCodeAt(0) + col);
     const rowNumber = (row + 1).toString();
     cells.push(colLetter + rowNumber);
   }
@@ -16,7 +16,7 @@ export const getRowCells = (row: number, colCount: number): string[] => {
 
 export function* runSaveCsvTask(
   colNames: SheetType['colNames'],
-  cells: SheetType['cells']
+  cells: SheetType['cells'],
 ) {
   try {
     const csv = sheetToCsv(colNames, cells);
@@ -32,7 +32,7 @@ export function* runSaveCsvTask(
       return {
         ...res1,
         ...res2,
-      }
+      };
     }
     return res1;
   } catch {
@@ -40,9 +40,7 @@ export function* runSaveCsvTask(
   }
 }
 
-export function* runCheckStatus(
-  serverId: string,
-) {
+export function* runCheckStatus(serverId: string) {
   try {
     const res1: IApiRes = yield Api.getStaus(serverId);
 
@@ -56,7 +54,7 @@ export function* runCheckStatus(
       return {
         ...res1,
         ...res2,
-      }
+      };
     }
     return res1;
   } catch {

@@ -3,7 +3,7 @@ import { SheetModel } from '../sheets/sheet';
 import { getNewSheet } from '../../assets/newSheet';
 
 export const SheetsStateModel = types
-  .model("SheetsStateModel", {
+  .model('SheetsStateModel', {
     selectedSheetId: types.maybe(types.string),
     sheets: types.map(SheetModel),
   })
@@ -20,7 +20,7 @@ export const SheetsStateModel = types
       self.selectedSheetId = id;
     },
     createNewSheet() {
-      const newSheet = SheetModel.create(getNewSheet())
+      const newSheet = SheetModel.create(getNewSheet());
       self.sheets.set(newSheet.id, newSheet);
       return newSheet;
     },

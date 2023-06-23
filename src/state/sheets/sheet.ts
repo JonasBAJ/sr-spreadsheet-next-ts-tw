@@ -7,20 +7,17 @@ import { CellModel } from '../sheets/cell';
 import { runCheckStatus, runSaveCsvTask } from '../../utils/sheet';
 import toast from 'react-hot-toast';
 
-const ColHeaderModel = types.model("ColHeaderModel", {
+const ColHeaderModel = types.model('ColHeaderModel', {
   col: types.number,
   value: types.string,
 });
 
-const SyncStatus = types.enumeration("SyncStatus", [
-  "IN_PROGRESS",
-  "DONE",
-]);
+const SyncStatus = types.enumeration('SyncStatus', ['IN_PROGRESS', 'DONE']);
 
-export type SyncStatusType = Instance<typeof SyncStatus>
+export type SyncStatusType = Instance<typeof SyncStatus>;
 
 export const SheetModel = types
-  .model("SheetModel", {
+  .model('SheetModel', {
     id: types.identifier,
     status: types.maybe(SyncStatus),
     serverId: types.maybe(types.string),
@@ -56,12 +53,16 @@ export const SheetModel = types
       },
       addRow() {
         self.rows += 1;
-        const newRow = Array(self.cols).fill(0).map((_, i) => CellModel.create({
-          col: i,
-          row: self.rows - 1,
-          edit: false,
-          value: '',
-        }))
+        const newRow = Array(self.cols)
+          .fill(0)
+          .map((_, i) =>
+            CellModel.create({
+              col: i,
+              row: self.rows - 1,
+              edit: false,
+              value: '',
+            }),
+          );
         self.cells.push(newRow);
         this.saveSheet();
       },
@@ -69,13 +70,13 @@ export const SheetModel = types
         if (saveTask) {
           saveTask.cancel();
         }
-        self.status = "IN_PROGRESS";
+        self.status = 'IN_PROGRESS';
         saveTask = flow(runSaveCsvTask)(self.colNames, self.cells);
-        saveTask.then(res => {
+        saveTask.then((res) => {
           if (res) {
             this.setMeta(res.status, res.id, res.done_at);
           } else {
-            toast.error('Error saving data... Retrying now!')
+            toast.error('Error saving data... Retrying now!');
             this.saveSheet();
           }
         });
@@ -83,14 +84,14 @@ export const SheetModel = types
       checkStatus() {
         if (self.serverId) {
           checkStatusTask = flow(runCheckStatus)(self.serverId);
-          checkStatusTask.then(res => {
+          checkStatusTask.then((res) => {
             if (res) {
               this.setMeta(res.status, res.id, res.done_at);
             } else {
-              toast.error('Error checking status... Retrying now!')
+              toast.error('Error checking status... Retrying now!');
               this.checkStatus();
             }
-          })
+          });
         } else {
           this.saveSheet();
         }

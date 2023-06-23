@@ -6,15 +6,10 @@ interface Props {
   children?: ReactNode;
 }
 
-export const HeaderButton: FC<Props> = ({
-  color,
-  onClick,
-  children
-}) => {
-
+export const HeaderButton: FC<Props> = ({ color, onClick, children }) => {
   return (
     <button onClick={onClick} className={`header-btn ${color}`}>
       {children}
     </button>
-  )
-}
+  );
+};

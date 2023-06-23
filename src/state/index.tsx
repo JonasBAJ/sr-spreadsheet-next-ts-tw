@@ -4,11 +4,11 @@ import {
   applySnapshot,
   onSnapshot,
   SnapshotIn,
-} from "mobx-state-tree";
-import { ComponentType, FC, createContext } from "react";
-import { initialState } from "../assets/mock";
-import { SearchModel } from "./search";
-import { SheetsStateModel } from "./sheets";
+} from 'mobx-state-tree';
+import { ComponentType, FC, createContext } from 'react';
+import { initialState } from '../assets/mock';
+import { SearchModel } from './search';
+import { SheetsStateModel } from './sheets';
 import { setCookie } from 'cookies-next';
 import { UiModel } from './ui';
 
@@ -29,9 +29,9 @@ export const initializeStore = (snapshot?: SnapshotIn<AppState>): AppState => {
       sheets: initialState,
     });
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       // Persist state on change
-      onSnapshot(store, snap => {
+      onSnapshot(store, (snap) => {
         setCookie('store', JSON.stringify(snap));
       });
     }
@@ -43,7 +43,7 @@ export const initializeStore = (snapshot?: SnapshotIn<AppState>): AppState => {
     }
   }
 
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return store;
   }
 
@@ -62,11 +62,7 @@ export const StoreProvider = RootStoreContext.Provider;
 export const Provider: FC<{
   Component: ComponentType;
   storeSnaptchot: string | null;
-}> = ({
-  Component,
-  storeSnaptchot,
-  ...rest
-}) => {
+}> = ({ Component, storeSnaptchot, ...rest }) => {
   const store = storeSnaptchot
     ? initializeStore(JSON.parse(storeSnaptchot))
     : initializeStore();
