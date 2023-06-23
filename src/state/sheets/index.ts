@@ -1,5 +1,6 @@
 import { Instance, types } from 'mobx-state-tree';
-import { SheetModel, SheetType } from '../sheets/sheet';
+import { SheetModel } from '../sheets/sheet';
+import { getNewSheet } from '../../assets/newSheet';
 
 export const SheetsStateModel = types
   .model("SheetsStateModel", {
@@ -18,8 +19,10 @@ export const SheetsStateModel = types
     setSelectedSheetId(id: string | undefined) {
       self.selectedSheetId = id;
     },
-    addSheet(sheet: SheetType) {
-      self.sheets.set(sheet.id, sheet);
+    createNewSheet() {
+      const newSheet = SheetModel.create(getNewSheet())
+      self.sheets.set(newSheet.id, newSheet);
+      return newSheet;
     },
   }));
 

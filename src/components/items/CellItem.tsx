@@ -19,7 +19,7 @@ export const CellItem = observer<Props>(({
   const ref = useRef<HTMLInputElement>(null);
   const { sheets, search } = useGlobalState();
 
-  const cell = sheets.selectedSheet?.getOrCreateCell(row, col);
+  const cell = sheets.selectedSheet?.getCell(row, col);
   const [cellValue, setCellValue] = useState(cell?.value || '')
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const CellItem = observer<Props>(({
   const toggleEdit = () => {
     cell?.setEdit(!cell.edit);
   }
-  
+
   const onSubmit = () => {
     if (cell?.value !== cellValue) {
       cell?.setValue(cellValue);

@@ -1,10 +1,11 @@
 import { SnapshotIn } from 'mobx-state-tree';
-import { SheetModel, SheetsStateModel } from '../state/sheets';
+import { SheetsStateModel } from '../state/sheets';
+import { SheetModel } from '../state/sheets/sheet';
 
 export const mockSheet: SnapshotIn<typeof SheetModel> = {
   id: "sh_demo",
   cols: 3,
-  rows: 3,
+  rows: 2,
   title: 'Your Personal Staking Calculator',
   colNames: [
     {

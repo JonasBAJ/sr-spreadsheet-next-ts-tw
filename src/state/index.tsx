@@ -61,13 +61,15 @@ export const StoreProvider = RootStoreContext.Provider;
 
 export const Provider: FC<{
   Component: ComponentType;
-  storeSnaptchot?: string;
+  storeSnaptchot: string | null;
 }> = ({
   Component,
   storeSnaptchot,
   ...rest
 }) => {
-  const store = initializeStore(JSON.parse(storeSnaptchot || 'null'));
+  const store = storeSnaptchot
+    ? initializeStore(JSON.parse(storeSnaptchot))
+    : initializeStore();
 
   return (
     <StoreProvider value={store}>

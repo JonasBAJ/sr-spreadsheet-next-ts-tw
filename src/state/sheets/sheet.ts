@@ -1,9 +1,9 @@
 import { flow } from 'mobx';
-import { Instance, SnapshotIn, types } from 'mobx-state-tree';
+import { Instance, types } from 'mobx-state-tree';
 import { CancellablePromise } from 'mobx/dist/internal';
 import { IApiRes } from '../../apis/api';
 import { notationToCoordinates } from '../../utils/cells';
-import { CellModel, CellType } from '../sheets/cell';
+import { CellModel } from '../sheets/cell';
 import { runCheckStatus, runSaveCsvTask } from '../../utils/sheet';
 import toast from 'react-hot-toast';
 
@@ -43,34 +43,24 @@ export const SheetModel = types
         const [row, col] = notationToCoordinates(id);
         return self.cells[row]?.[col];
       },
-      createCell(cell: SnapshotIn<CellType>) {
-        const newCell = CellModel.create(cell);
-        if (!self.cells[cell.row]) self.cells.push([]);
-        self.cells[cell.row][cell.col] = newCell;
-        return self.cells[cell.row][cell.col];
-      },
-      getOrCreateCell(row: number, col: number) {
-        if (self.cells[row]?.[col]) {
-          return self.cells[row]?.[col];
-        }
-        return this.createCell({
-          row,
-          col,
-          edit: false,
-          value: "",
-        });
-      },
       getRow(row: number) {
         return self.cells[row];
-      },
-      addRow() {
-        self.rows += 1;
-        this.saveSheet();
       },
       setMeta(status: SyncStatusType, serverId?: string, savedAt?: string) {
         self.status = status;
         if (savedAt) self.savedAt = savedAt;
         if (serverId) self.serverId = serverId;
+      },
+      addRow() {
+        self.rows += 1;
+        const newRow = Array(self.cols).fill(0).map((_, i) => CellModel.create({
+          col: i,
+          row: self.rows - 1,
+          edit: false,
+          value: '',
+        }))
+        self.cells.push(newRow);
+        this.saveSheet();
       },
       saveSheet() {
         if (saveTask) {

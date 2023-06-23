@@ -11,10 +11,10 @@ import { getCookie } from "cookies-next";
 import { Aside } from '../components/layout/Aside';
 
 export const getServerSideProps = (ctx: DocumentContext) => {
-  const storeSnaptchot = getCookie("store", ctx);
+  const snap = getCookie("store", ctx);
   return {
     props: {
-      storeSnaptchot
+      storeSnaptchot: snap || null,
     },
   };
 };
