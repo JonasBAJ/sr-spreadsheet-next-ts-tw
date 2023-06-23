@@ -10,8 +10,10 @@ import { initialState } from "../assets/mock";
 import { SearchModel } from "./search";
 import { SheetsStateModel } from "./sheets";
 import { setCookie } from 'cookies-next';
+import { UiModel } from './ui';
 
 export const RootStore = types.model({
+  ui: UiModel,
   search: SearchModel,
   sheets: SheetsStateModel,
 });
@@ -22,6 +24,7 @@ let store: AppState | undefined;
 export const initializeStore = (snapshot?: SnapshotIn<AppState>): AppState => {
   if (!store) {
     store = RootStore.create({
+      ui: { asideOpen: false },
       search: {},
       sheets: initialState,
     });

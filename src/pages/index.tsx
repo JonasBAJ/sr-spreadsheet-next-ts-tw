@@ -1,4 +1,4 @@
-import { MacHeader } from "../components/headers/MacHeader";
+import { MacHeader } from "../components/layout/Header";
 import { SearchInput } from "../components/inputs/SearchInput";
 import { Loader } from "../components/svg/Loader";
 import { Sheet } from "../components/girds/Sheet";
@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { useGlobalState } from "../utils/hooks/useGlobalState";
 import { DocumentContext } from "next/document";
 import { getCookie } from "cookies-next";
+import { Aside } from '../components/layout/Aside';
 
 export const getServerSideProps = (ctx: DocumentContext) => {
   const storeSnaptchot = getCookie("store", ctx);
@@ -24,6 +25,7 @@ const Home = observer(() => {
   return (
     <div className="h-screen w-screen bg-white">
       <MacHeader />
+      <Aside/>
       <main className="container mx-auto max-w-6xl p-4">
         <div className="flex w-full items-center justify-between mb-4">
           <h1 className="text-black font-montserrat font-bold text-xl">

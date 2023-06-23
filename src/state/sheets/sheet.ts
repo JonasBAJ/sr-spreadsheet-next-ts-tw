@@ -1,7 +1,7 @@
 import { flow } from 'mobx';
 import { Instance, SnapshotIn, types } from 'mobx-state-tree';
 import { CancellablePromise } from 'mobx/dist/internal';
-import { Api, IApiRes } from '../../apis/api';
+import { IApiRes } from '../../apis/api';
 import { notationToCoordinates } from '../../utils/cells';
 import { CellModel, CellType } from '../sheets/cell';
 import { runCheckStatus, runSaveCsvTask } from '../../utils/sheet';
@@ -85,7 +85,7 @@ export const SheetModel = types
             toast.error('Error saving data... Retrying now!')
             this.saveSheet();
           }
-        })
+        });
       },
       checkStatus() {
         if (self.serverId) {
