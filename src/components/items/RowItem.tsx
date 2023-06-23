@@ -1,55 +1,42 @@
-import { FC } from "react";
-import { CellItem } from "./CellItem";
-import { ISheetsState, useSheets } from "../../state/sheets";
-import { coordinatesToNotation } from "../../utils/cells";
-import { Cell } from "../../models/Cell";
+import { CellItem } from './CellItem';
+import { observer } from 'mobx-react-lite';
+import { useGlobalState } from '../../utils/hooks/useGlobalState';
 
 interface Props {
   row: number;
 }
 
-const selector = (row: number) => (s: ISheetsState) => {
-  const selectedId = s.selectedSheetId;
-  const sheet = selectedId ? s.sheets[selectedId] : null;
-  const cellIds = Array(sheet?.cols || 0)
-    .fill(0)
-    .map((_, i) => coordinatesToNotation(row, i));
-  const cells = cellIds.map((id) => sheet?.data[id]);
-  return {
-    cells,
-    removeRow: s.removeRow,
-    rowOnEdit: cells?.some((c) => c?.edit),
-    rowOnError: cells?.some((c) => c?.error),
-  };
-};
+export const RowItem = observer<Props>(({ row }) => {
+  const { sheets } = useGlobalState();
+  const sheet = sheets.selectedSheet;
 
-export const RowItem: FC<Props> = ({ row }) => {
-  const { cells, rowOnEdit, rowOnError, removeRow } = useSheets(selector(row));
-  const gridTemplateColumns = "1fr ".repeat(cells.length || 0);
+  const cells: number[] = Array(sheets.selectedSheet?.cols).fill(0);
+  const rowOnEdit = sheet?.getRow(row)?.some((c) => c?.edit);
+  const rowOnError = sheet?.getRow(row)?.some((c) => c?.computed === '#VALUE!');
+
+  const gridTemplateColumns = '1fr '.repeat(sheet?.cols || 0);
   const errorStyle = rowOnError
-    ? "shadow-lg border-[1px] border-error-border"
-    : "";
+    ? 'shadow-lg border-[1px] border-error-border'
+    : '';
 
   return (
-    <div className='flex gap-1'>
+    <div className="flex gap-1">
       <div
         style={{ gridTemplateColumns }}
-        className={`w-full grid justify-items-center items-center rounded-lg ${errorStyle}`}
+        className={`grid w-full items-center justify-items-center rounded-lg ${errorStyle}`}
       >
-        {cells.map((cell, i) => {
-          const finalCell =
-            cell || new Cell(coordinatesToNotation(row, i), "").toPlainObject();
+        {cells.map((_, i) => {
           return (
             <CellItem
-              cell={finalCell}
-              key={finalCell?.id}
+              key={i}
+              col={i}
+              row={row}
               rowOnEdit={rowOnEdit}
               last={i === cells.length - 1}
             />
           );
         })}
       </div>
-      {/* <button onClick={() => removeRow(row)} className="sheet-btn">-</button> */}
     </div>
   );
-};
+});

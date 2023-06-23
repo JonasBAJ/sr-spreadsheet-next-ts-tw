@@ -1,9 +1,5 @@
 export const Loader = () => (
-  <svg
-    id="L2"
-    className='w-4 h-4'
-    viewBox="-10 -10 120 120"
-  >
+  <svg id="L2" className="h-4 w-4" viewBox="-10 -10 120 120">
     <circle
       fill="none"
       stroke="currentColor"

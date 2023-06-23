@@ -1,21 +1,18 @@
-import { ISheet } from '../types/sheet';
-import { coordinatesToNotation } from './cells';
+import { SheetType } from '../state/sheets/sheet';
 
-export const sheetToCsv = (sheet?: ISheet | null) => {
-  if (!sheet) return '';
-  const lines: string[] = [
-    sheet.colNames.map(col => col.value).join(','),
-  ];
+export const sheetToCsv = (
+  colNames: SheetType['colNames'],
+  cells: SheetType['cells'],
+) => {
+  const lines: string[] = [colNames.map((col) => col.value).join(',')];
 
-  for (let row = 0; row < sheet.rows; row++) {
+  cells.forEach((row) => {
     let lineValues: string[] = [];
-    for (let col = 0; col < sheet.cols; col++) {
-      const cellId = coordinatesToNotation(row, col);
-      const value = sheet.data[cellId]?.value || '';
-      lineValues.push(value);
-    }
+    row.forEach((col) => {
+      lineValues.push(col.computed);
+    });
     lines.push(lineValues.join(','));
-  }
+  });
 
   return lines.join('\n');
-}
+};

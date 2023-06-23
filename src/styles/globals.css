@@ -7,32 +7,31 @@ body {
   background: #ffffff;
 }
 
-
 @layer components {
   .header-btn {
-    @apply flex justify-center items-center;
-    @apply rounded-full h-[14px] w-[14px];
+    @apply flex items-center justify-center;
+    @apply h-[14px] w-[14px] rounded-full;
   }
 
   .col-header {
-    @apply font-montserrat font-medium min-w-[180px];
-    @apply w-full text-center bg-col-header py-2.5;
+    @apply min-w-[180px] font-montserrat font-medium;
+    @apply w-full bg-col-header py-2.5 text-center;
     @apply first:rounded-l-lg last:rounded-r-lg;
   }
 
   .cell {
-    @apply font-montserrat relative min-w-[180px];
-    @apply w-full text-center bg-col-header py-1;
+    @apply relative min-w-[180px] font-montserrat;
+    @apply w-full bg-col-header py-1 text-center;
     @apply first:rounded-l-lg last:rounded-r-lg;
   }
 
   .cell-input {
-    @apply font-montserrat bg-transparent;
-    @apply text-center focus:ring-0 focus:border-0 focus:outline-0	;
+    @apply bg-transparent font-montserrat;
+    @apply text-center focus:border-0 focus:outline-0 focus:ring-0;
   }
 
   .sheet-btn {
-    @apply px-4 py-2.5 rounded-lg bg-col-header;
+    @apply rounded-lg bg-col-header px-4 py-2.5;
     @apply font-montserrat;
   }
 }

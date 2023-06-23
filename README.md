@@ -1,38 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Baby excel project
 
-## Getting Started
+Simplified, React-based spreadsheet application that implements some functionality of standard spreadsheet software. Despite the limitations of a deliberately slow and buggy server, it ensures smooth UX.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+- Create a simple, reactive spreadsheet application using React/NextJS.
+- UI design based on the provided Figma design.
+- Implementation of a excel-like cells that auto-saves user inputs.
+- Reactive and user-friendly UI that can handle server limitations.
+- Client-side computation of arithmetic expressions.
+- Auto recomputation of expressions when referenced cell values change.
+- Accommodation of a slow and buggy server to maintain a high-quality UX.
+
+## Instructions
+
+### Frontend
+
+Install dependencies:
+
+```
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run locally:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+npm run dev
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Backend
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+A server as a docker image, [located here](https://hub.docker.com/r/stakingrewards/engineering-frontend-challenge)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Isntall image locally:
 
-## Learn More
+```
+docker pull stakingrewards/engineering-frontend-challenge:latest
+```
 
-To learn more about Next.js, take a look at the following resources:
+Run docker image:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+docker run --name fe-challenge -d -p 8082:8081 stakingrewards/engineering-frontend-challenge:latest
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# Feature improvements:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Add/Remove columns
+- Remove rows
+- Excel-like function support
+- Range selections

@@ -1,10 +1,5 @@
 export const SpyGlass = () => (
-  <svg
-    width="13"
-    height="13"
-    fill="none"
-    viewBox="0 0 13 13"
-  >
+  <svg width="13" height="13" fill="none" viewBox="0 0 13 13">
     <path
       opacity="0.3"
       fillRule="evenodd"

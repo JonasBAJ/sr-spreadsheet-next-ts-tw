@@ -1,106 +1,74 @@
-import { FC, useEffect, useRef, KeyboardEvent, useState } from 'react';
+import { useEffect, useRef, KeyboardEvent, useState } from 'react';
 import { Pencil } from '../svg/Pencil';
-import { ISheetsState, useSheets } from '../../state/sheets';
-import { produce } from 'immer';
-import { formatValue } from '../../utils/cellFormat';
-import { ICell } from '../../types/sheet';
-import toast from 'react-hot-toast';
-import { computeCell } from '../../utils/cells';
-import { useSearch } from '../../state/search';
-import { cellContainsSearchValue } from '../../utils/search';
-
-const selector = (s: ISheetsState) => {
-  const selectedId = s.selectedSheetId;
-  const sheet = selectedId ? s.sheets[selectedId] : null;
-
-  return {
-    updateCell: s.updateCell,
-    setCellEdit: s.setCellEdit,
-    cells: sheet?.data,
-  }
-}
+import { observer } from 'mobx-react-lite';
+import { useGlobalState } from '../../utils/hooks/useGlobalState';
 
 interface Props {
-  cell: ICell;
+  row: number;
+  col: number;
   last?: boolean;
   rowOnEdit?: boolean;
 }
 
-export const CellItem: FC<Props> = ({
-  cell,
-  last,
-  rowOnEdit,
-}) => {
-  const { searchValue } = useSearch();
-  const { updateCell, cells, setCellEdit } = useSheets(selector);
+export const CellItem = observer<Props>(({ row, col, last, rowOnEdit }) => {
   const ref = useRef<HTMLInputElement>(null);
-  const [cellValue, setCellValue] = useState(cell?.value || '')
+  const { sheets, search } = useGlobalState();
 
-  const containsSearchVal = cellContainsSearchValue(searchValue, cellValue, cell?.computed);
+  const cell = sheets.selectedSheet?.getCell(row, col);
+  const [cellValue, setCellValue] = useState(cell?.value || '');
 
   useEffect(() => {
-    if (cell.edit && ref.current) {
+    if (cell?.edit && ref.current) {
       ref.current.focus();
     }
-  }, [cell.edit, ref.current])
+  }, [cell?.edit]);
 
   const toggleEdit = () => {
-    const newCell = produce(cell, draft => {
-      draft.edit = !draft.edit;
-    });
-    setCellEdit(newCell);
-  }
+    cell?.setEdit(!cell.edit);
+  };
 
   const onSubmit = () => {
-    try {
-      if (cellValue !== cell.value) {
-        const newCell = produce(cell, draft => {
-          draft.value = cellValue;
-          draft.edit = false;
-        });
-        const { computed } = computeCell(newCell, cells || {});
-        if (computed?.error && computed.message) {
-          toast.error(`${computed.id}: ${computed.message}`);
-        }
-        updateCell(newCell);
-      }
-    } catch (e: any) {
-      toast.error(e.message);
+    if (cell?.value !== cellValue) {
+      cell?.setValue(cellValue);
     }
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       onSubmit();
+      toggleEdit();
     }
-  }
+  };
 
   const bgStyle = rowOnEdit ? 'bg-input-edit' : '';
   const separator = last ? '' : 'border-r border-black/30';
   const editStyle = cell?.edit ? 'scale-y-105 z-10 rounded-sm shadow-lg' : '';
-  const searchStyle = containsSearchVal ? 'rounded-sm shadow-lg bg-green/30' : '';
+  const searchStyle = cell?.containsSearchText(search.searchValue)
+    ? 'rounded-sm shadow-lg bg-green/30'
+    : '';
 
   return (
     <div className={`cell ${editStyle} ${searchStyle} ${bgStyle}`}>
-      <div className={`w-full h-full py-2.5 ${separator}`}>
+      <div className={`h-full w-full py-2.5 ${separator}`}>
         {rowOnEdit ? (
           <input
             ref={ref}
-            onKeyDown={onKeyDown}
-            className='cell-input'
             value={cellValue}
             onBlur={onSubmit}
-            onChange={e => setCellValue(e.target.value)}
+            onKeyDown={onKeyDown}
+            className="cell-input"
+            onChange={(e) => setCellValue(e.target.value)}
           />
         ) : (
-          <p className='h-[24px]'>
-            {formatValue(cell)}
-          </p>
+          <p className="h-[24px]">{cell?.computed}</p>
         )}
       </div>
-      <button onClick={toggleEdit} className='absolute bottom-1 right-0 py-1 px-2'>
-        <Pencil/>
+      <button
+        onClick={toggleEdit}
+        className="absolute bottom-1 right-0 px-2 py-1"
+      >
+        <Pencil />
       </button>
     </div>
   );
-};
+});

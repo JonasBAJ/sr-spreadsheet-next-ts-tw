@@ -1,10 +1,9 @@
-import { SyncStatus } from '../types/sheet';
+import { SyncStatusType } from '../state/sheets/sheet';
 
-export const getReadableStatus = (status?: SyncStatus) => {
+export const getReadableStatus = (status?: SyncStatusType) => {
   if (!status) return 'Unsaved';
   return {
     IN_PROGRESS: 'Syncing',
     DONE: 'Saved',
-    ERROR: 'Error'
   }[status];
-}
+};
